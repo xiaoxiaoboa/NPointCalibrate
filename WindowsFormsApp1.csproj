@@ -334,12 +334,15 @@
         <Compile Include="Common\CogTools\MyToolBlock.cs" />
         <Compile Include="Common\Log.cs" />
         <Compile Include="Common\Logger.cs" />
+        <Compile Include="Common\Login\User.cs" />
+        <Compile Include="Common\Login\UserData.cs" />
         <Compile Include="Common\MyPmaResult.cs" />
         <Compile Include="Common\PlcControl.cs" />
         <Compile Include="Enum\ChildControlStatus.cs" />
         <Compile Include="Enum\LogLevel.cs" />
         <Compile Include="Enum\PhotoTriggerSource.cs" />
         <Compile Include="Enum\PlcDataAddress.cs" />
+        <Compile Include="Interface\IUser.cs" />
         <Compile Include="Main.cs">
             <SubType>Form</SubType>
         </Compile>
