@@ -56,13 +56,13 @@ namespace WindowsFormsApp1 {
             this.panel4 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.myDisplay1 = new MyDisplay();
+            this.myDisplay1 = new WindowsFormsApp1.Views.Forms.MyDisplay();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.myDisplay2 = new MyDisplay();
+            this.myDisplay2 = new WindowsFormsApp1.Views.Forms.MyDisplay();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.myRecordDisplay1 = new MyRecordDisplay();
+            this.myRecordDisplay1 = new WindowsFormsApp1.Views.Forms.MyRecordDisplay();
             this.panel10 = new System.Windows.Forms.Panel();
-            this.myRecordDisplay2 = new MyRecordDisplay();
+            this.myRecordDisplay2 = new WindowsFormsApp1.Views.Forms.MyRecordDisplay();
             this.miniToolStrip = new System.Windows.Forms.MenuStrip();
             this.camera = new System.Windows.Forms.ToolStripMenuItem();
             this.initCameraMenu_item = new System.Windows.Forms.ToolStripMenuItem();
@@ -549,14 +549,15 @@ namespace WindowsFormsApp1 {
             // connectPlc_item
             // 
             this.connectPlc_item.Name = "connectPlc_item";
-            this.connectPlc_item.Size = new System.Drawing.Size(108, 24);
+            this.connectPlc_item.Size = new System.Drawing.Size(152, 24);
             this.connectPlc_item.Text = "连接";
             this.connectPlc_item.Click += new System.EventHandler(this.connect_plc_Click);
             // 
             // disconnectPlc_item
             // 
+            this.disconnectPlc_item.Enabled = false;
             this.disconnectPlc_item.Name = "disconnectPlc_item";
-            this.disconnectPlc_item.Size = new System.Drawing.Size(108, 24);
+            this.disconnectPlc_item.Size = new System.Drawing.Size(152, 24);
             this.disconnectPlc_item.Text = "断开";
             this.disconnectPlc_item.Click += new System.EventHandler(this.disconnect_plc_Click);
             // 
@@ -629,7 +630,7 @@ namespace WindowsFormsApp1 {
             this.operation.Size = new System.Drawing.Size(51, 25);
             this.operation.Text = "操作";
             // 
-            // Form1
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

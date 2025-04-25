@@ -38,6 +38,9 @@ namespace WindowsFormsApp1 {
         private readonly string _calibNPointToNPointVppPath =
             Path.Combine(Application.StartupPath, "vpp/calibNPointToNPoint.vpp");
 
+        // 登录窗口事件
+        public event EventHandler OnMainFormClose;
+
         #endregion
 
         public Main() {
@@ -394,6 +397,8 @@ namespace WindowsFormsApp1 {
             if (_cameraControl.Acq != null) {
                 _cameraControl.Acq.Complete -= Complete;
             }
+
+            OnMainFormClose?.Invoke(this, EventArgs.Empty);
         }
 
         // 加载标定作业tb vpp
