@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cognex.VisionPro;
+using Cognex.VisionPro.Implementation;
 using Cognex.VisionPro.PMAlign;
 using Cognex.VisionPro.ToolBlock;
 using WindowsFormsApp1.Enum;
@@ -12,7 +14,7 @@ using WindowsFormsApp1.Enum;
 namespace WindowsFormsApp1.Common.CogTools {
     public class MyToolBlock {
         private static readonly Lazy<MyToolBlock> _instance = new Lazy<MyToolBlock>(() => new MyToolBlock());
-        private CogToolBlock _cogToolBlock;
+
 
         private CogToolBlock _calibrateToolBlock;
         private CogToolBlock _identificationToolBlock;
@@ -62,20 +64,47 @@ namespace WindowsFormsApp1.Common.CogTools {
             });
         }
 
+        public bool GetCalibrateResult(out double x, out double y) {
+            x = 0;
+            y = 0;
+            if (_calibrateToolBlock == null) return false;
+            if (_calibrateToolBlock.RunStatus.Result != CogToolResultConstants.Accept) return false;
+            if (!_calibrateToolBlock.Outputs.Contains("X") && !_calibrateToolBlock.Outputs.Contains("Y")) return false;
 
-        // 获取PMA结果
-        public List<MyPmaResult> GetPmaResult() {
-            var myPmaResults = new List<MyPmaResult>();
-            if (_cogToolBlock.Tools["CogPMAlignTool1"] is CogPMAlignTool pma) {
-                if (pma.RunStatus.Result == CogToolResultConstants.Accept && pma.Results != null) {
-                    myPmaResults.AddRange(from CogPMAlignResult r in pma.Results
-                        select new MyPmaResult(r.Score, r.GetPose().RotationX, r.GetPose().TranslationY));
-                }
+            var outputX = _calibrateToolBlock.Outputs["X"];
+            var outputY = _calibrateToolBlock.Outputs["Y"];
+
+            if (outputX?.Value == null || outputY?.Value == null) return false;
+
+            x = (double)outputX.Value;
+            y = (double)outputY.Value;
+
+
+            return true;
+        }
+
+        public T GetTool<T>(CogToolBlock toolBlock, string name) where T : CogToolBase {
+            if (toolBlock?.Tools == null)
+                return null;
+
+            if (toolBlock.Tools.Contains(name)) {
+                return toolBlock.Tools[name] as T;
             }
 
-            return myPmaResults;
+            return null;
         }
-        
-        
+
+        // 获取PMA结果
+        // public List<MyPmaResult> GetPmaResult() {
+        //     var myPmaResults = new List<MyPmaResult>();
+        //     if (_cogToolBlock.Tools["CogPMAlignTool1"] is CogPMAlignTool pma) {
+        //         if (pma.RunStatus.Result == CogToolResultConstants.Accept && pma.Results != null) {
+        //             myPmaResults.AddRange(from CogPMAlignResult r in pma.Results
+        //                 select new MyPmaResult(r.Score, r.GetPose().RotationX, r.GetPose().TranslationY));
+        //         }
+        //     }
+        //
+        //     return myPmaResults;
+        // }
     }
 }

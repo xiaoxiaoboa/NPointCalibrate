@@ -14,7 +14,6 @@ namespace WindowsFormsApp1.Views.Forms {
         }
 
         public void SetRecord(ICogRecord record) {
-            Console.WriteLine(record);
             cogRecordDisplay1.Record = record;
         }
         public void SetGraphic(ICogImage image) {

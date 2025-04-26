@@ -8,6 +8,9 @@ namespace WindowsFormsApp1.Views.Forms {
     public partial class Login : Form {
         public Login() {
             InitializeComponent();
+        }
+
+        private void Login_Load(object sender, EventArgs e) {
             InitUserData();
         }
 
@@ -29,6 +32,9 @@ namespace WindowsFormsApp1.Views.Forms {
                             if (lastLoginUser.Flag == 1) {
                                 textBox2.Text = lastLoginUser.Password;
                                 checkBox1.Checked = lastLoginUser.Flag == 1;
+                            }
+                            else {
+                                comboBox1.Text = lastLoginUser.UserName;
                             }
                         }
                     });

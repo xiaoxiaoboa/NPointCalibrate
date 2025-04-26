@@ -102,6 +102,7 @@ namespace WindowsFormsApp1 {
             }
         }
 
+        // 获取toolblock处理后的图像给recorddisplay
         private void UpdateRecordDisplay(
             MyRecordDisplay display,
             CogToolBlock toolBlock,
@@ -228,6 +229,8 @@ namespace WindowsFormsApp1 {
 
                 toolBlock.Inputs["InputImage"].Value = image;
 
+
+                // 传进图像后，执行toolblock
                 callback?.Invoke();
             }
             else {
@@ -394,11 +397,6 @@ namespace WindowsFormsApp1 {
             identificationForm.Show();
         }
 
-        // 工具栏导出日志按钮事件
-        private void exportLog_Click(object sender, EventArgs e) {
-            exportCsv_Click(sender, e);
-        }
-
         // 关闭窗口
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
             // 关闭实时预览
@@ -417,8 +415,10 @@ namespace WindowsFormsApp1 {
                 _cameraControl.Acq.Complete -= Complete;
             }
 
-            MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
-            MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
+            if (MyToolBlock.Instance.CalibrateToolBlock != null)
+                MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
+            if (MyToolBlock.Instance.IdentificationToolBlock != null)
+                MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
 
             // 关闭main窗口时，也关闭登录窗口
             OnMainFormClose?.Invoke(this, EventArgs.Empty);
@@ -445,6 +445,14 @@ namespace WindowsFormsApp1 {
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
         }
 
+        // 打开九点标定窗口
+        private void ninePointCali_item_Click(object sender, EventArgs e) {
+            Logger.Instance.AddLog("打开九点标定窗口");
+            var ninePoint = new NPointCalibrate();
+            ninePoint.Show();
+        }
+
         #endregion
+
     }
 }

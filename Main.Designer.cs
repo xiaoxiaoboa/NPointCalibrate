@@ -82,6 +82,8 @@ namespace WindowsFormsApp1 {
             this.exportLog_item = new System.Windows.Forms.ToolStripMenuItem();
             this.operation = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.fittingRotation_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.ninePointCali_item = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -372,7 +374,6 @@ namespace WindowsFormsApp1 {
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(358, 430);
             this.listView1.TabIndex = 0;
-            this.toolTip1.SetToolTip(this.listView1, "双击放大/缩小");
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             // 
@@ -549,7 +550,7 @@ namespace WindowsFormsApp1 {
             // connectPlc_item
             // 
             this.connectPlc_item.Name = "connectPlc_item";
-            this.connectPlc_item.Size = new System.Drawing.Size(152, 24);
+            this.connectPlc_item.Size = new System.Drawing.Size(108, 24);
             this.connectPlc_item.Text = "连接";
             this.connectPlc_item.Click += new System.EventHandler(this.connect_plc_Click);
             // 
@@ -557,7 +558,7 @@ namespace WindowsFormsApp1 {
             // 
             this.disconnectPlc_item.Enabled = false;
             this.disconnectPlc_item.Name = "disconnectPlc_item";
-            this.disconnectPlc_item.Size = new System.Drawing.Size(152, 24);
+            this.disconnectPlc_item.Size = new System.Drawing.Size(108, 24);
             this.disconnectPlc_item.Text = "断开";
             this.disconnectPlc_item.Click += new System.EventHandler(this.disconnect_plc_Click);
             // 
@@ -614,21 +615,35 @@ namespace WindowsFormsApp1 {
             // 
             this.runlog.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.exportLog_item });
             this.runlog.Name = "runlog";
-            this.runlog.Size = new System.Drawing.Size(81, 25);
-            this.runlog.Text = "运行日志";
+            this.runlog.Size = new System.Drawing.Size(51, 25);
+            this.runlog.Text = "日志";
             // 
             // exportLog_item
             // 
             this.exportLog_item.Name = "exportLog_item";
             this.exportLog_item.Size = new System.Drawing.Size(138, 24);
             this.exportLog_item.Text = "导出日志";
-            this.exportLog_item.Click += new System.EventHandler(this.exportLog_Click);
+            this.exportLog_item.Click += new System.EventHandler(this.exportCsv_Click);
             // 
             // operation
             // 
+            this.operation.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fittingRotation_item, this.ninePointCali_item });
             this.operation.Name = "operation";
             this.operation.Size = new System.Drawing.Size(51, 25);
             this.operation.Text = "操作";
+            // 
+            // fittingRotation_item
+            // 
+            this.fittingRotation_item.Name = "fittingRotation_item";
+            this.fittingRotation_item.Size = new System.Drawing.Size(152, 24);
+            this.fittingRotation_item.Text = "拟合旋转";
+            // 
+            // ninePointCali_item
+            // 
+            this.ninePointCali_item.Name = "ninePointCali_item";
+            this.ninePointCali_item.Size = new System.Drawing.Size(152, 24);
+            this.ninePointCali_item.Text = "九点标定";
+            this.ninePointCali_item.Click += new System.EventHandler(this.ninePointCali_item_Click);
             // 
             // Main
             // 
@@ -665,6 +680,9 @@ namespace WindowsFormsApp1 {
             this.miniToolStrip.PerformLayout();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.ToolStripMenuItem fittingRotation_item;
+        private System.Windows.Forms.ToolStripMenuItem ninePointCali_item;
 
         private System.Windows.Forms.ToolStripMenuItem stopLive_item;
 

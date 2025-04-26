@@ -7,10 +7,11 @@ namespace WindowsFormsApp1.Common.Login {
         public int Flag{ get; set; }
         public int LastLogin{ get; set; }
 
-        public User(string userName, string password, int flag) {
+        public User(string userName, string password, int flag, int lastLogin = 0) {
             UserName = userName;
             Password = password;
             Flag = flag;
+            LastLogin = lastLogin;
         }
     }
 }

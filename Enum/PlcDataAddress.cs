@@ -2,34 +2,26 @@
 
 namespace WindowsFormsApp1.Enum {
     public enum PlcDataAddress {
-        [PlcAddress("MD104")]
-        Press,
+        [PlcAddress("DB50.DBD20")] X,
 
-        [PlcAddress("DB1.DBD4")]
-        Release,
+        [PlcAddress("DB50.DBD24")] Y,
 
-        [PlcAddress("MD100")]
-        OnRed,
+        [PlcAddress("DB50.DBD28")] Z,
 
-        [PlcAddress("DB1.DBD0")]
-        OnGreen
+        [PlcAddress("DB50.DBD32")] R
     }
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class PlcAddressAttribute : Attribute
-    {
-        public string Address { get; }
 
-        public PlcAddressAttribute(string address)
-        {
+    [AttributeUsage(AttributeTargets.Field)]
+    public class PlcAddressAttribute : Attribute {
+        public string Address{ get; }
+
+        public PlcAddressAttribute(string address) {
             Address = address;
         }
-        
     }
-    public static class PlcTagExtensions
-    {
-        public static string GetAddress(this PlcDataAddress tag)
-        {
+
+    public static class PlcTagExtensions {
+        public static string GetAddress(this PlcDataAddress tag) {
             var memberInfo = typeof(PlcDataAddress).GetMember(tag.ToString())[0];
 
             var attr = (PlcAddressAttribute)Attribute.GetCustomAttribute(
@@ -38,5 +30,4 @@ namespace WindowsFormsApp1.Enum {
             return attr?.Address ?? throw new InvalidOperationException($"枚举 {tag} 没有绑定地址");
         }
     }
-
 }

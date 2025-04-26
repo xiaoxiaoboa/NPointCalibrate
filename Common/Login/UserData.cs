@@ -40,15 +40,15 @@ namespace WindowsFormsApp1.Common.Login {
                 var lastLogin = int.Parse(columns[3]);
                 // 记住密码的用户
                 if (flag == 1) {
-                    _flagUsers.Add(new User(userName, password, flag));
+                    _flagUsers.Add(new User(userName, password, flag, lastLogin));
                 }
 
                 // 最后一次登录的用户
                 if (lastLogin == 1) {
-                    LastLoginUser = new User(userName, password, flag);
+                    LastLoginUser = new User(userName, password, flag, lastLogin);
                 }
 
-                _users.Add(new User(userName, password, flag));
+                _users.Add(new User(userName, password, flag, lastLogin));
             }
         }
 
