@@ -9,23 +9,27 @@ using WindowsFormsApp1.Interface;
 
 namespace WindowsFormsApp1.Common.Login {
     public class UserData {
+        // 用户数据文件路径
+        private string _path = Path.Combine(Application.StartupPath, "data/users.csv");
+
         private static readonly UserData _instance = new UserData();
 
         public static UserData Instance => _instance;
 
+        // 用户列表
         private List<IUser> _users = new List<IUser>();
-        public List<IUser> Users => _users;
-        private string _path = Path.Combine(Application.StartupPath, "data/users.csv");
 
         // 记住密码的用户
         private List<IUser> _flagUsers = new List<IUser>();
         public List<IUser> FlagUsers => _flagUsers;
 
+        // 最后登录的用户
         public IUser LastLoginUser{ get; set; }
 
 
         private UserData() { }
 
+        // 从文件获取数据
         public void Initialize() {
             var lines = File.ReadAllLines(_path);
             for (int i = 1; i < lines.Length; i++) {
@@ -49,6 +53,7 @@ namespace WindowsFormsApp1.Common.Login {
         }
 
 
+        // 登录
         public async Task<string> Login(IUser user) {
             var res = _users.FirstOrDefault(u => u.UserName == user.UserName);
             if (res != null) {
@@ -73,6 +78,7 @@ namespace WindowsFormsApp1.Common.Login {
         }
 
 
+        // 存储csv
         private async Task SaveCsv() {
             using (StreamWriter sw = new StreamWriter(_path, false, Encoding.UTF8)) {
                 await sw.WriteLineAsync("username,password,flag,lastlogin");

@@ -11,15 +11,11 @@ using WindowsFormsApp1.Common;
 using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
 using WindowsFormsApp1.Interface;
-using WindowsFormsApp1.Views;
 using WindowsFormsApp1.Views.Forms;
 
 namespace WindowsFormsApp1 {
     public partial class Main : Form {
         #region 属性
-
-        private MyToolBlock _calibrateTb = new MyToolBlock();
-        private MyToolBlock _calibNPointToNPointVppPathTb = new MyToolBlock();
 
         // 相机相关属性
         private readonly CameraControl _cameraControl = new CameraControl();
@@ -58,36 +54,19 @@ namespace WindowsFormsApp1 {
         #region 方法
 
         // 加载vpp
-        private async Task LoadVpp(string toolBlockVppPath, MyToolBlock toolBlock) {
+        private async Task LoadVpp(string toolBlockVppPath, LoadToolBlock loadToolBlock) {
             Logger.Instance.AddLog("加载ToolBlock vpp...");
 
-            var (message, logLevel) = await toolBlock.LoadToolBlockVpp(toolBlockVppPath);
+            var (message, logLevel) = await MyToolBlock.Instance.LoadToolBlockVpp(toolBlockVppPath, loadToolBlock);
 
             Logger.Instance.AddLog(message, logLevel);
-        }
-
-        // 传图像给toolblock
-        private void ImageToToolBlock(MyToolBlock myToolBlock, ICogImage image) {
-            if (myToolBlock.ToolBlock != null) {
-                if (!myToolBlock.ToolBlock.Inputs.Contains("InputImage")) {
-                    myToolBlock.ToolBlock.Inputs.Add(new CogToolBlockTerminal("InputImage", image));
-                }
-
-                myToolBlock.ToolBlock.Inputs["InputImage"].Value = image;
-
-                //图像已加载到ToolBlock，开始处理图像...
-                myToolBlock.ToolBlock.Run();
-            }
-            else {
-                Logger.Instance.AddLog("ToolBlock vpp文件未加载，图像不会被处理");
-            }
         }
 
         // 初始化相机
         private async void InitCamera() {
             initCameraMenu_item.Enabled = false;
             initCamera.Enabled = false;
-            string errorMessage = null;
+            string errorMessage;
 
             Logger.Instance.AddLog("相机初始化中...");
 
@@ -121,6 +100,20 @@ namespace WindowsFormsApp1 {
             else {
                 action();
             }
+        }
+
+        private void UpdateRecordDisplay(
+            MyRecordDisplay display,
+            CogToolBlock toolBlock,
+            string subRecordName
+        ) {
+            display.Invoke((MethodInvoker)delegate {
+                display.SetRecord(
+                    toolBlock.CreateLastRunRecord().SubRecords[subRecordName]
+                );
+            });
+
+            Logger.Instance.AddLog("图像处理完成，已加载到标定RecordDisplay");
         }
 
         #endregion
@@ -216,7 +209,31 @@ namespace WindowsFormsApp1 {
         #endregion
 
         // 事件：toolblock 执行运行后
+        private void OnCalibrateToolBlockRan(object sender, EventArgs e) {
+            UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock,
+                "CogImageConvertTool1.OutputImage");
+        }
 
+        private void OnIdentificationToolBlockRan(object sender, EventArgs e) {
+            UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock,
+                "CogCalibNPointToNPointTool1.OutputImage");
+        }
+
+        // 传图像给toolblock
+        private void ImageToToolBlock(CogToolBlock toolBlock, ICogImage image, Action callback = null) {
+            if (toolBlock != null) {
+                if (!toolBlock.Inputs.Contains("InputImage")) {
+                    toolBlock.Inputs.Add(new CogToolBlockTerminal("InputImage", image));
+                }
+
+                toolBlock.Inputs["InputImage"].Value = image;
+
+                callback?.Invoke();
+            }
+            else {
+                Logger.Instance.AddLog("ToolBlock vpp文件未加载，图像不会被处理");
+            }
+        }
 
         // 拍照完成事件
         private void Complete(object sender, CogCompleteEventArgs e) {
@@ -224,13 +241,14 @@ namespace WindowsFormsApp1 {
                 var image = _cameraControl.GetGraphic();
                 RunOnUIThread(() => { myDisplay2.SetGraphic(image); });
 
+                ImageToToolBlock(MyToolBlock.Instance.CalibrateToolBlock, image,
+                    () => MyToolBlock.Instance.CalibrateToolBlock.Run());
+                ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image);
 
-                // 传图像给toolblock
-                ImageToToolBlock(_calibrateTb, image);
-                ImageToToolBlock(_calibNPointToNPointVppPathTb, image);
 
                 _cameraControl.IsShooting = false;
                 RunOnUIThread(() => { takePho.Enabled = true; });
+                Logger.Instance.AddLog("拍照结束");
             }
             catch (Exception exception) {
                 Logger.Instance.AddLog(exception.Message, LogLevel.Error);
@@ -260,7 +278,7 @@ namespace WindowsFormsApp1 {
 
         // 一次拍照
         private void takePho_Click(object sender, EventArgs e) {
-            Logger.Instance.AddLog("开始一次拍照...");
+            Logger.Instance.AddLog("开始拍照...");
             takePho.Enabled = false;
 
             var message = _cameraControl.TakePhotoGraph();
@@ -364,15 +382,16 @@ namespace WindowsFormsApp1 {
         // 开启标定作业窗口
         private void calibrate_Click(object sender, EventArgs e) {
             Logger.Instance.AddLog("打开标定作业Form...");
-            var calibrateForm = new ToolBlock(_calibrateTb);
+            var calibrateForm = new ToolBlock(MyToolBlock.Instance.CalibrateToolBlock, LoadToolBlock.Calibrate);
             calibrateForm.Show();
         }
 
         // 开启识别作业窗口
         private void identificationWork_item_Click(object sender, EventArgs e) {
-            Logger.Instance.AddLog("打开识别作业Frorm...");
-            var calibNPointToNPointForm = new ToolBlock(_calibNPointToNPointVppPathTb);
-            calibNPointToNPointForm.Show();
+            Logger.Instance.AddLog("打开识别作业Form...");
+            var identificationForm =
+                new ToolBlock(MyToolBlock.Instance.IdentificationToolBlock, LoadToolBlock.Identification);
+            identificationForm.Show();
         }
 
         // 工具栏导出日志按钮事件
@@ -398,23 +417,32 @@ namespace WindowsFormsApp1 {
                 _cameraControl.Acq.Complete -= Complete;
             }
 
+            MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
+            MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
+
+            // 关闭main窗口时，也关闭登录窗口
             OnMainFormClose?.Invoke(this, EventArgs.Empty);
         }
 
         // 加载标定作业tb vpp
         private async void calibrate_item_Click(object sender, EventArgs e) {
-            await LoadVpp(_calibrateVppPath, _calibrateTb);
+            await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
+            MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
         }
 
         // 加载识别作业tb vpp
         private async void identification_item_Click(object sender, EventArgs e) {
-            await LoadVpp(_calibNPointToNPointVppPath, _calibNPointToNPointVppPathTb);
+            await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
+            MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
         }
 
         // 标定和识别作业同时加载
         private async void tbBoth_item_Click(object sender, EventArgs e) {
-            await LoadVpp(_calibrateVppPath, _calibrateTb);
-            await LoadVpp(_calibNPointToNPointVppPath, _calibNPointToNPointVppPathTb);
+            await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
+            await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
+
+            MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
+            MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
         }
 
         #endregion

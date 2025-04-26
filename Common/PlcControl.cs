@@ -18,7 +18,7 @@ namespace WindowsFormsApp1.Common {
 
         public static PlcControl Instance => _instance.Value;
 
-        public event EventHandler PlcButtonPressed;
+        public event Action<int> OnNPointCalibrateChanged;
 
         private PlcControl() { }
 
@@ -40,7 +40,6 @@ namespace WindowsFormsApp1.Common {
 
             _plc.Open();
 
-            StartListening();
         }
 
         public void Disconnect() {
@@ -78,7 +77,6 @@ namespace WindowsFormsApp1.Common {
                 var result = await Read<int>(PlcDataAddress.Press.GetAddress()); // 按钮位地址
                 if (result == 0) {
                     //触发
-                    PlcButtonPressed?.Invoke(this, EventArgs.Empty);
                 }
             }
             catch (Exception exception) {

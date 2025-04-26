@@ -11,35 +11,49 @@ using WindowsFormsApp1.Enum;
 
 namespace WindowsFormsApp1.Common.CogTools {
     public class MyToolBlock {
-        private readonly object _lock = new object();
+        private static readonly Lazy<MyToolBlock> _instance = new Lazy<MyToolBlock>(() => new MyToolBlock());
         private CogToolBlock _cogToolBlock;
-        private string _vppPath;
 
+        private CogToolBlock _calibrateToolBlock;
+        private CogToolBlock _identificationToolBlock;
 
-        public string VppPath => _vppPath;
+        public CogToolBlock CalibrateToolBlock => _calibrateToolBlock;
+        public CogToolBlock IdentificationToolBlock => _identificationToolBlock;
 
-        public CogToolBlock ToolBlock{
-            get {
-                lock (_lock) {
-                    return _cogToolBlock;
-                }
+        public static MyToolBlock Instance => _instance.Value;
+
+        private MyToolBlock() { }
+
+        // toolblock vpp
+        public readonly string CalibrateVppPath = Path.Combine(Application.StartupPath, "vpp/calibrate.vpp");
+
+        public readonly string IdentificationVppPath =
+            Path.Combine(Application.StartupPath, "vpp/calibNPointToNPoint.vpp");
+
+        private void SetToolBLock(CogToolBlock cogToolBlock, LoadToolBlock loadToolBlock) {
+            switch (loadToolBlock) {
+                case LoadToolBlock.Calibrate:
+                    _calibrateToolBlock = cogToolBlock;
+                    break;
+                case LoadToolBlock.Identification:
+                    _identificationToolBlock = cogToolBlock;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(loadToolBlock), loadToolBlock, null);
             }
         }
 
         // 加载toolblock vpp
-        public async Task<(string, LogLevel)> LoadToolBlockVpp(string toolBlockVppPath) {
-            _vppPath = toolBlockVppPath;
-
+        public async Task<(string, LogLevel)> LoadToolBlockVpp(string toolBlockVppPath, LoadToolBlock loadToolBlock) {
             if (!File.Exists(toolBlockVppPath)) {
-                _cogToolBlock = new CogToolBlock();
+                SetToolBLock(new CogToolBlock(), loadToolBlock);
                 return ("未发现ToolBlock vpp文件，new了一个", LogLevel.Info);
             }
 
             return await Task.Run(() => {
                 try {
                     var tb = CogSerializer.LoadObjectFromFile(toolBlockVppPath) as CogToolBlock;
-                    _cogToolBlock = tb;
-
+                    SetToolBLock(tb, loadToolBlock);
                     return ("发现vpp文件，加载成功", LogLevel.Info);
                 }
                 catch (Exception exception) {
@@ -61,5 +75,7 @@ namespace WindowsFormsApp1.Common.CogTools {
 
             return myPmaResults;
         }
+        
+        
     }
 }

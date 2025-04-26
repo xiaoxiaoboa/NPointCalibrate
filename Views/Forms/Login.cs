@@ -11,6 +11,7 @@ namespace WindowsFormsApp1.Views.Forms {
             InitUserData();
         }
 
+        // 初始化数据
         public void InitUserData() {
             Task.Run(() => {
                 try {
@@ -61,6 +62,8 @@ namespace WindowsFormsApp1.Views.Forms {
             checkBox1.Checked = false;
         }
 
+        #region 鼠标hover密码框
+
         private void textBox2_MouseHover(object sender, EventArgs e) {
             textBox2.UseSystemPasswordChar = false;
         }
@@ -69,6 +72,9 @@ namespace WindowsFormsApp1.Views.Forms {
             textBox2.UseSystemPasswordChar = true;
         }
 
+        #endregion
+
+        // combox中选择时触发事件
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e) {
             var comboBox = sender as ComboBox;
             if (comboBox?.SelectedItem is IUser selectUser) {

@@ -8,10 +8,15 @@ namespace WindowsFormsApp1.Views.Forms {
         // 事件
         public event EventHandler MaximizeRestoreRequested;
 
+
         public MyRecordDisplay() {
             InitializeComponent();
         }
 
+        public void SetRecord(ICogRecord record) {
+            Console.WriteLine(record);
+            cogRecordDisplay1.Record = record;
+        }
         public void SetGraphic(ICogImage image) {
             cogRecordDisplay1.Image = image;
             cogRecordDisplay1.AutoFit = true;
@@ -24,6 +29,5 @@ namespace WindowsFormsApp1.Views.Forms {
         public void Label_DoubleClick(object sender, EventArgs e) {
             MaximizeRestoreRequested?.Invoke(this, EventArgs.Empty);
         }
-        
     }
 }
