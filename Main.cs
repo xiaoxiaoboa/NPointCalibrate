@@ -17,10 +17,6 @@ namespace WindowsFormsApp1 {
     public partial class Main : Form {
         #region 属性
 
-        // 相机相关属性
-        private readonly CameraControl _cameraControl = new CameraControl();
-
-
         // 控制子控件放大缩小的相关属性
         private readonly Dictionary<Control, ChildControlInfo> _controlInfos =
             new Dictionary<Control, ChildControlInfo>();
@@ -71,7 +67,7 @@ namespace WindowsFormsApp1 {
             Logger.Instance.AddLog("相机初始化中...");
 
 
-            errorMessage = await _cameraControl.Initialize();
+            errorMessage = await CameraControl.Instance.Initialize();
 
             if (errorMessage != null) {
                 Logger.Instance.AddLog($@"相机连接错误：{errorMessage}", LogLevel.Error);
@@ -89,7 +85,7 @@ namespace WindowsFormsApp1 {
             Logger.Instance.AddLog("相机初始化完成");
 
             // 绑定拍照完成事件
-            _cameraControl.Acq.Complete += Complete;
+            CameraControl.Instance.Acq.Complete += Complete;
         }
 
         // 恢复控件到UI线程执行
@@ -241,7 +237,7 @@ namespace WindowsFormsApp1 {
         // 拍照完成事件
         private void Complete(object sender, CogCompleteEventArgs e) {
             try {
-                var image = _cameraControl.GetGraphic();
+                var image = CameraControl.Instance.GetGraphic();
                 RunOnUIThread(() => { myDisplay2.SetGraphic(image); });
 
                 ImageToToolBlock(MyToolBlock.Instance.CalibrateToolBlock, image,
@@ -249,7 +245,7 @@ namespace WindowsFormsApp1 {
                 ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image);
 
 
-                _cameraControl.IsShooting = false;
+                CameraControl.Instance.IsShooting = false;
                 RunOnUIThread(() => { takePho.Enabled = true; });
                 Logger.Instance.AddLog("拍照结束");
             }
@@ -261,7 +257,7 @@ namespace WindowsFormsApp1 {
 
         // 开启实时
         private void startLive_Click(object sender, EventArgs e) {
-            myDisplay1.StartLive(_cameraControl.Acq);
+            myDisplay1.StartLive(CameraControl.Instance.Acq);
 
             Logger.Instance.AddLog("开启相机实时预览");
 
@@ -284,7 +280,7 @@ namespace WindowsFormsApp1 {
             Logger.Instance.AddLog("开始拍照...");
             takePho.Enabled = false;
 
-            var message = _cameraControl.TakePhotoGraph();
+            var message = CameraControl.Instance.TakePhotoGraph();
             Logger.Instance.AddLog(message);
         }
 
@@ -370,7 +366,11 @@ namespace WindowsFormsApp1 {
 
         // 断开相机
         private void disconnectCamera_item_Click(object sender, EventArgs e) {
-            _cameraControl.DisposeCamera();
+            CameraControl.Instance.DisposeCamera();
+
+            if (myDisplay1.LiveDisplayStatus()) {
+                myDisplay1.StopLive();
+            }
 
             startLive.Enabled = false;
             stopLive_item.Enabled = false;
@@ -405,14 +405,14 @@ namespace WindowsFormsApp1 {
             }
 
             // 销毁相机实例
-            _cameraControl.DisposeCamera();
+            CameraControl.Instance.DisposeCamera();
             // 断开plc
             PlcControl.Instance.Disconnect();
 
             Logger.Instance.Logs.ListChanged -= LogListOnListChanged;
 
-            if (_cameraControl.Acq != null) {
-                _cameraControl.Acq.Complete -= Complete;
+            if (CameraControl.Instance.Acq != null) {
+                CameraControl.Instance.Acq.Complete -= Complete;
             }
 
             if (MyToolBlock.Instance.CalibrateToolBlock != null)
@@ -453,6 +453,5 @@ namespace WindowsFormsApp1 {
         }
 
         #endregion
-
     }
 }

@@ -64,24 +64,30 @@ namespace WindowsFormsApp1.Common.CogTools {
             });
         }
 
-        public bool GetCalibrateResult(out double x, out double y) {
-            x = 0;
-            y = 0;
-            if (_calibrateToolBlock == null) return false;
-            if (_calibrateToolBlock.RunStatus.Result != CogToolResultConstants.Accept) return false;
-            if (!_calibrateToolBlock.Outputs.Contains("X") && !_calibrateToolBlock.Outputs.Contains("Y")) return false;
+        // 获取标定结果
+        public (bool, Dictionary<string, object>) GetToolBlockOutputsResults(CogToolBlock toolBlock,
+            IEnumerable<string> keys) {
+            var values = new Dictionary<string, object>();
 
-            var outputX = _calibrateToolBlock.Outputs["X"];
-            var outputY = _calibrateToolBlock.Outputs["Y"];
+            if (_calibrateToolBlock == null) return (false, values);
+            if (_calibrateToolBlock.RunStatus.Result != CogToolResultConstants.Accept) return (false, values);
 
-            if (outputX?.Value == null || outputY?.Value == null) return false;
+            foreach (var key in keys) {
+                if (toolBlock.Outputs.Contains(key)) {
+                    var terminal = toolBlock.Outputs[key];
 
-            x = (double)outputX.Value;
-            y = (double)outputY.Value;
+                    if (terminal?.Value == null) {
+                        return (false, values);
+                    }
+
+                    values[key] = terminal.Value;
+                }
+            }
 
 
-            return true;
+            return (true, values);
         }
+
 
         public T GetTool<T>(CogToolBlock toolBlock, string name) where T : CogToolBase {
             if (toolBlock?.Tools == null)

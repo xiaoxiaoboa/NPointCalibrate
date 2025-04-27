@@ -2,18 +2,22 @@
 using System.IO;
 using System.Threading.Tasks;
 using Cognex.VisionPro;
-using Cognex.VisionPro.Exceptions;
 
-namespace WindowsFormsApp1.Common {
+namespace WindowsFormsApp1.Common.CogTools {
     public class CameraControl {
+        private static readonly Lazy<CameraControl> _instance = new Lazy<CameraControl>(() => new CameraControl());
         private CogFrameGrabbers _cogFrameGrabbers;
         private ICogFrameGrabber _cogFrameGrabber;
         private ICogAcqFifo _cogAcqFifo;
         private int _currentAcqTicket;
+        
+        public static CameraControl Instance => _instance.Value;
 
         public bool IsShooting{ get; set; }
 
         public ICogAcqFifo Acq => _cogAcqFifo;
+
+        private CameraControl() { }
 
         // 初始化相机
         public async Task<string> Initialize() {

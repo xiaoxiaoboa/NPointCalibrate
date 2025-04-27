@@ -58,14 +58,14 @@ namespace WindowsFormsApp1.Views.Forms {
             // listen_item
             // 
             this.listen_item.Name = "listen_item";
-            this.listen_item.Size = new System.Drawing.Size(152, 24);
+            this.listen_item.Size = new System.Drawing.Size(138, 24);
             this.listen_item.Text = "监听标定";
             this.listen_item.Click += new System.EventHandler(this.listen_item_Click);
             // 
             // clear_item
             // 
             this.clear_item.Name = "clear_item";
-            this.clear_item.Size = new System.Drawing.Size(152, 24);
+            this.clear_item.Size = new System.Drawing.Size(138, 24);
             this.clear_item.Text = "清除";
             // 
             // cogRecordDisplay1
@@ -96,6 +96,7 @@ namespace WindowsFormsApp1.Views.Forms {
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "NPointCalibrate";
             this.Text = "NPointCalibrate";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NPointCalibrate_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cogRecordDisplay1)).EndInit();
