@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,6 +44,12 @@ namespace WindowsFormsApp1.Common.CogTools {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(loadToolBlock), loadToolBlock, null);
             }
+        }
+
+        public void SaveVpp(CogToolBlock toolBlock, string vppPath) {
+            CogSerializer.SaveObjectToFile(toolBlock, vppPath,
+                typeof(BinaryFormatter),
+                CogSerializationOptionsConstants.Minimum);
         }
 
         // 加载toolblock vpp

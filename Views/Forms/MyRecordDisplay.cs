@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Cognex.VisionPro;
+using Cognex.VisionPro.ToolBlock;
 using WindowsFormsApp1.Interface;
 
 namespace WindowsFormsApp1.Views.Forms {
@@ -14,12 +15,11 @@ namespace WindowsFormsApp1.Views.Forms {
         }
 
         public void SetRecord(ICogRecord record) {
-            cogRecordDisplay1.Record = record;
+            // cogRecordsDisplay1.Record = record;
+            cogRecordsDisplay1.Subject = record;
         }
-        public void SetGraphic(ICogImage image) {
-            cogRecordDisplay1.Image = image;
-            cogRecordDisplay1.AutoFit = true;
-        }
+
+        public void SetGraphic(ICogImage image) { }
 
         public void SetLabelText(string text) {
             label1.Text = text;

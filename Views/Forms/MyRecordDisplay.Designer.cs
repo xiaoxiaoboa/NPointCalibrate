@@ -27,15 +27,13 @@ namespace WindowsFormsApp1.Views.Forms {
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MyRecordDisplay));
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.cogRecordDisplay1 = new Cognex.VisionPro.CogRecordDisplay();
+            this.cogRecordsDisplay1 = new Cognex.VisionPro.CogRecordsDisplay();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cogRecordDisplay1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -52,7 +50,7 @@ namespace WindowsFormsApp1.Views.Forms {
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cogRecordDisplay1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.cogRecordsDisplay1, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -75,23 +73,16 @@ namespace WindowsFormsApp1.Views.Forms {
             this.toolTip1.SetToolTip(this.label1, "双击放大/缩小");
             this.label1.DoubleClick += new System.EventHandler(this.Label_DoubleClick);
             // 
-            // cogRecordDisplay1
+            // cogRecordsDisplay1
             // 
-            this.cogRecordDisplay1.ColorMapLowerClipColor = System.Drawing.Color.Black;
-            this.cogRecordDisplay1.ColorMapLowerRoiLimit = 0D;
-            this.cogRecordDisplay1.ColorMapPredefined = Cognex.VisionPro.Display.CogDisplayColorMapPredefinedConstants.None;
-            this.cogRecordDisplay1.ColorMapUpperClipColor = System.Drawing.Color.Black;
-            this.cogRecordDisplay1.ColorMapUpperRoiLimit = 1D;
-            this.cogRecordDisplay1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cogRecordDisplay1.DoubleTapZoomCycleLength = 2;
-            this.cogRecordDisplay1.DoubleTapZoomSensitivity = 2.5D;
-            this.cogRecordDisplay1.Location = new System.Drawing.Point(3, 26);
-            this.cogRecordDisplay1.MouseWheelMode = Cognex.VisionPro.Display.CogDisplayMouseWheelModeConstants.Zoom1;
-            this.cogRecordDisplay1.MouseWheelSensitivity = 1D;
-            this.cogRecordDisplay1.Name = "cogRecordDisplay1";
-            this.cogRecordDisplay1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("cogRecordDisplay1.OcxState")));
-            this.cogRecordDisplay1.Size = new System.Drawing.Size(437, 311);
-            this.cogRecordDisplay1.TabIndex = 1;
+            this.cogRecordsDisplay1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cogRecordsDisplay1.Location = new System.Drawing.Point(3, 26);
+            this.cogRecordsDisplay1.Name = "cogRecordsDisplay1";
+            this.cogRecordsDisplay1.SelectedRecordKey = null;
+            this.cogRecordsDisplay1.ShowRecordsDropDown = true;
+            this.cogRecordsDisplay1.Size = new System.Drawing.Size(437, 311);
+            this.cogRecordsDisplay1.Subject = null;
+            this.cogRecordsDisplay1.TabIndex = 1;
             // 
             // MyRecordDisplay
             // 
@@ -102,12 +93,12 @@ namespace WindowsFormsApp1.Views.Forms {
             this.Size = new System.Drawing.Size(443, 340);
             this.panel1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.cogRecordDisplay1)).EndInit();
             this.ResumeLayout(false);
         }
 
+        private Cognex.VisionPro.CogRecordsDisplay cogRecordsDisplay1;
+
         private System.Windows.Forms.ToolTip toolTip1;
-        private Cognex.VisionPro.CogRecordDisplay cogRecordDisplay1;
 
         private System.Windows.Forms.Label label1;
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cognex.VisionPro;
 using Cognex.VisionPro.ToolBlock;
+using S7.Net;
 using WindowsFormsApp1.Common;
 using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
@@ -45,6 +46,7 @@ namespace WindowsFormsApp1 {
             listView1.Columns.Add("日志等级");
             listView1.Columns.Add("信息");
             Logger.Instance.AddLog("程序启动");
+            Logger.Instance.AddLog("123132,342352423,42312123,123124ggbcvbgdf");
         }
 
         #region 方法
@@ -101,14 +103,9 @@ namespace WindowsFormsApp1 {
         // 获取toolblock处理后的图像给recorddisplay
         private void UpdateRecordDisplay(
             MyRecordDisplay display,
-            CogToolBlock toolBlock,
-            string subRecordName
+            CogToolBlock toolBlock
         ) {
-            display.Invoke((MethodInvoker)delegate {
-                display.SetRecord(
-                    toolBlock.CreateLastRunRecord().SubRecords[subRecordName]
-                );
-            });
+            display.Invoke((MethodInvoker)delegate { display.SetRecord(toolBlock.CreateLastRunRecord()); });
 
             Logger.Instance.AddLog("图像处理完成，已加载到标定RecordDisplay");
         }
@@ -207,13 +204,32 @@ namespace WindowsFormsApp1 {
 
         // 事件：toolblock 执行运行后
         private void OnCalibrateToolBlockRan(object sender, EventArgs e) {
-            UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock,
-                "CogImageConvertTool1.OutputImage");
+            UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock);
         }
 
         private void OnIdentificationToolBlockRan(object sender, EventArgs e) {
-            UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock,
-                "CogCalibNPointToNPointTool1.OutputImage");
+            // UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock);
+            // Logger.Instance.AddLog("准备获取识别ToolBlock结果，向PLC发送...");
+            // var keys = new List<string>() { "Angle", "X", "Y" };
+            // var (res, values) =
+            //     MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.IdentificationToolBlock, keys);
+            //
+            // var angle = (float)values["Angle"];
+            // var x = (float)values["X"];
+            // var y = (float)values["Y"];
+            //
+            // // 弧度转角度
+            // angle = (float)(180 / Math.PI) * angle;
+            // float offsetR = angle * -1;
+            // PlcControl.Instance.OffsetR = offsetR;
+            //
+            // float offsetX = x * -1;
+            // float offsetY = y * -1;
+            //
+            // PlcControl.Instance.OffsetX = offsetX;
+            // PlcControl.Instance.OffsetY = offsetY;
+            //
+            // Logger.Instance.AddLog($"x偏移：{offsetX}，y偏移：{offsetY}，r偏移：{offsetR}");
         }
 
         // 传图像给toolblock
@@ -427,12 +443,14 @@ namespace WindowsFormsApp1 {
         // 加载标定作业tb vpp
         private async void calibrate_item_Click(object sender, EventArgs e) {
             await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
+            MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
             MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
         }
 
         // 加载识别作业tb vpp
         private async void identification_item_Click(object sender, EventArgs e) {
             await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
+            MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
         }
 
@@ -441,12 +459,20 @@ namespace WindowsFormsApp1 {
             await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
             await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
 
+            MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
             MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
+            MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
         }
 
         // 打开九点标定窗口
         private void ninePointCali_item_Click(object sender, EventArgs e) {
+            if (MyToolBlock.Instance.CalibrateToolBlock == null ||
+                MyToolBlock.Instance.IdentificationToolBlock == null) {
+                Logger.Instance.AddLog("标定和识别ToolBlock未加载！！！");
+                return;
+            }
+
             Logger.Instance.AddLog("打开九点标定窗口");
             var ninePoint = new NPointCalibrate();
             ninePoint.Show();

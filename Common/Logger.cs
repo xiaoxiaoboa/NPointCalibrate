@@ -47,7 +47,10 @@ namespace WindowsFormsApp1.Common {
                     await sw.WriteLineAsync("时间,等级,信息");
 
                     foreach (var log in logsCopy) {
-                        await sw.WriteLineAsync($"{log.TimeStamp},{log.Level},{log.Message}");
+                        var timestamp = EscapeCsvField(log.TimeStamp);
+                        var level = EscapeCsvField(log.Level.ToString());
+                        var message = EscapeCsvField(log.Message);
+                        await sw.WriteLineAsync($"{timestamp},{level},{message}");
                     }
                 }
 
@@ -56,6 +59,21 @@ namespace WindowsFormsApp1.Common {
             catch (Exception exception) {
                 return $"导出日志失败：{exception.Message}";
             }
+        }
+
+        private static string EscapeCsvField(string field) {
+            if (string.IsNullOrEmpty(field))
+                return "";
+
+            bool mustQuote = field.Contains(",") || field.Contains("\"") || field.Contains("\n") ||
+                             field.Contains("\r");
+
+            if (mustQuote) {
+                field = field.Replace("\"", "\"\""); // 双引号替换成两个双引号
+                field = $"\"{field}\""; // 外层加引号
+            }
+
+            return field;
         }
     }
 }

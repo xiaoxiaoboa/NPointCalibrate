@@ -81,9 +81,9 @@ namespace WindowsFormsApp1 {
             this.runlog = new System.Windows.Forms.ToolStripMenuItem();
             this.exportLog_item = new System.Windows.Forms.ToolStripMenuItem();
             this.operation = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.fittingRotation_item = new System.Windows.Forms.ToolStripMenuItem();
             this.ninePointCali_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -635,13 +635,13 @@ namespace WindowsFormsApp1 {
             // fittingRotation_item
             // 
             this.fittingRotation_item.Name = "fittingRotation_item";
-            this.fittingRotation_item.Size = new System.Drawing.Size(152, 24);
+            this.fittingRotation_item.Size = new System.Drawing.Size(138, 24);
             this.fittingRotation_item.Text = "拟合旋转";
             // 
             // ninePointCali_item
             // 
             this.ninePointCali_item.Name = "ninePointCali_item";
-            this.ninePointCali_item.Size = new System.Drawing.Size(152, 24);
+            this.ninePointCali_item.Size = new System.Drawing.Size(138, 24);
             this.ninePointCali_item.Text = "九点标定";
             this.ninePointCali_item.Click += new System.EventHandler(this.ninePointCali_item_Click);
             // 
@@ -714,8 +714,8 @@ namespace WindowsFormsApp1 {
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
 
-        private MyRecordDisplay myRecordDisplay1;
-        private MyRecordDisplay myRecordDisplay2;
+        private WindowsFormsApp1.Views.Forms.MyRecordDisplay myRecordDisplay1;
+        private WindowsFormsApp1.Views.Forms.MyRecordDisplay myRecordDisplay2;
 
         private System.Windows.Forms.Panel panel10;
 

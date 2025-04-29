@@ -52,9 +52,7 @@ namespace WindowsFormsApp1.Views.Forms {
                                 Directory.CreateDirectory("./vpp/");
                             }
 
-                            CogSerializer.SaveObjectToFile(_toolBlock, _vppPath,
-                                typeof(BinaryFormatter),
-                                CogSerializationOptionsConstants.Minimum);
+                            MyToolBlock.Instance.SaveVpp(_toolBlock, _vppPath);
                             return ("保存成功", LogLevel.Info);
                         }
                         catch (Exception exception) {

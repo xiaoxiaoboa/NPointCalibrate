@@ -8,7 +8,9 @@ namespace WindowsFormsApp1.Enum {
 
         [PlcAddress("DB50.DBD28")] Z,
 
-        [PlcAddress("DB50.DBD32")] R
+        [PlcAddress("DB50.DBD32")] R,
+        [PlcAddress("DB50.DBD8")] NineCaliNum,
+        [PlcAddress("DB51.DBD24")] NineCaliNumCheck,
     }
 
     [AttributeUsage(AttributeTargets.Field)]
