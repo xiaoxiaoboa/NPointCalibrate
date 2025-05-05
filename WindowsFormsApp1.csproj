@@ -333,7 +333,6 @@
     <ItemGroup>
         <Compile Include="Common\ChildControlInfo.cs" />
         <Compile Include="Common\CogTools\CameraControl.cs" />
-        <Compile Include="Common\CogTools\MyIdentificationControl.cs" />
         <Compile Include="Common\CogTools\MyToolBlock.cs" />
         <Compile Include="Common\IniControl.cs" />
         <Compile Include="Common\Log.cs" />

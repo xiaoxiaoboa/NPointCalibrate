@@ -522,7 +522,7 @@ namespace WindowsFormsApp1 {
             // config_item
             // 
             this.config_item.Name = "config_item";
-            this.config_item.Size = new System.Drawing.Size(152, 24);
+            this.config_item.Size = new System.Drawing.Size(108, 24);
             this.config_item.Text = "配置";
             this.config_item.Click += new System.EventHandler(this.config_item_Click);
             // 

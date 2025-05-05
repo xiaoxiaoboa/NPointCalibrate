@@ -16,8 +16,14 @@ namespace WindowsFormsApp1.Common {
 
         private readonly string _filePath = Path.Combine(Application.StartupPath + "\\config.ini");
 
-        private IniControl() {
-        }
+        private IniControl() { }
+
+        // 基准点属性
+        // public float BaseX{ get; set; }
+        // public float BaseY{ get; set; }
+        // public float BaseAngle{ get; set; }
+        // public float RotateCenterX{ get; set; }
+        // public float RotateCenterY{ get; set; }
 
         // 加载文件
         public void LoadFile() {
