@@ -64,6 +64,8 @@ namespace WindowsFormsApp1 {
             this.panel10 = new System.Windows.Forms.Panel();
             this.myRecordDisplay2 = new WindowsFormsApp1.Views.Forms.MyRecordDisplay();
             this.miniToolStrip = new System.Windows.Forms.MenuStrip();
+            this.system = new System.Windows.Forms.ToolStripMenuItem();
+            this.config_item = new System.Windows.Forms.ToolStripMenuItem();
             this.camera = new System.Windows.Forms.ToolStripMenuItem();
             this.initCameraMenu_item = new System.Windows.Forms.ToolStripMenuItem();
             this.disconnectCamera_item = new System.Windows.Forms.ToolStripMenuItem();
@@ -504,11 +506,25 @@ namespace WindowsFormsApp1 {
             // 
             this.miniToolStrip.AutoSize = false;
             this.miniToolStrip.BackColor = System.Drawing.SystemColors.Window;
-            this.miniToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.camera, this.plc, this.vppCalibrate, this.runlog, this.operation });
+            this.miniToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.system, this.camera, this.plc, this.vppCalibrate, this.runlog, this.operation });
             this.miniToolStrip.Location = new System.Drawing.Point(0, 0);
             this.miniToolStrip.Name = "miniToolStrip";
             this.miniToolStrip.Size = new System.Drawing.Size(1234, 29);
             this.miniToolStrip.TabIndex = 0;
+            // 
+            // system
+            // 
+            this.system.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.config_item });
+            this.system.Name = "system";
+            this.system.Size = new System.Drawing.Size(51, 25);
+            this.system.Text = "系统";
+            // 
+            // config_item
+            // 
+            this.config_item.Name = "config_item";
+            this.config_item.Size = new System.Drawing.Size(152, 24);
+            this.config_item.Text = "配置";
+            this.config_item.Click += new System.EventHandler(this.config_item_Click);
             // 
             // camera
             // 
@@ -680,6 +696,9 @@ namespace WindowsFormsApp1 {
             this.miniToolStrip.PerformLayout();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.ToolStripMenuItem system;
+        private System.Windows.Forms.ToolStripMenuItem config_item;
 
         private System.Windows.Forms.ToolStripMenuItem fittingRotation_item;
         private System.Windows.Forms.ToolStripMenuItem ninePointCali_item;

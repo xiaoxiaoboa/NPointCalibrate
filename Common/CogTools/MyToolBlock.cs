@@ -76,8 +76,8 @@ namespace WindowsFormsApp1.Common.CogTools {
             IEnumerable<string> keys) {
             var values = new Dictionary<string, object>();
 
-            if (_calibrateToolBlock == null) return (false, values);
-            if (_calibrateToolBlock.RunStatus.Result != CogToolResultConstants.Accept) return (false, values);
+            if (toolBlock == null) return (false, values);
+            if (toolBlock.RunStatus.Result != CogToolResultConstants.Accept) return (false, values);
 
             foreach (var key in keys) {
                 if (toolBlock.Outputs.Contains(key)) {
@@ -90,7 +90,6 @@ namespace WindowsFormsApp1.Common.CogTools {
                     values[key] = terminal.Value;
                 }
             }
-
 
             return (true, values);
         }
@@ -107,17 +106,14 @@ namespace WindowsFormsApp1.Common.CogTools {
             return null;
         }
 
-        // 获取PMA结果
-        // public List<MyPmaResult> GetPmaResult() {
-        //     var myPmaResults = new List<MyPmaResult>();
-        //     if (_cogToolBlock.Tools["CogPMAlignTool1"] is CogPMAlignTool pma) {
-        //         if (pma.RunStatus.Result == CogToolResultConstants.Accept && pma.Results != null) {
-        //             myPmaResults.AddRange(from CogPMAlignResult r in pma.Results
-        //                 select new MyPmaResult(r.Score, r.GetPose().RotationX, r.GetPose().TranslationY));
-        //         }
-        //     }
-        //
-        //     return myPmaResults;
-        // }
+        // 获取record
+        public ICogRecord GetRecord(CogToolBlock toolBlock, string name) {
+            if (toolBlock == null) return null;
+            if (toolBlock.RunStatus.Result != CogToolResultConstants.Accept) return null;
+
+            var records = toolBlock.CreateLastRunRecord().SubRecords;
+
+            return records.ContainsKey(name) ? records[name] : null;
+        }
     }
 }

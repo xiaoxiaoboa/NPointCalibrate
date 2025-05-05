@@ -40,13 +40,15 @@ namespace WindowsFormsApp1 {
             InitializeComponent();
             InitializeChildControls();
 
+            // 加载ini文件
+            IniControl.Instance.LoadFile();
+
             // 初始化listview
             Logger.Instance.Logs.ListChanged += LogListOnListChanged;
             listView1.Columns.Add("时间戳");
             listView1.Columns.Add("日志等级");
             listView1.Columns.Add("信息");
             Logger.Instance.AddLog("程序启动");
-            Logger.Instance.AddLog("123132,342352423,42312123,123124ggbcvbgdf");
         }
 
         #region 方法
@@ -304,6 +306,7 @@ namespace WindowsFormsApp1 {
         private async void connect_plc_Click(object sender, EventArgs e) {
             var message = await Task.Run(() => {
                 try {
+                    Logger.Instance.AddLog("正在连接PLC...");
                     PlcControl.Instance.Connect();
 
                     if (PlcControl.Instance.IsConnected) {
@@ -476,6 +479,12 @@ namespace WindowsFormsApp1 {
             Logger.Instance.AddLog("打开九点标定窗口");
             var ninePoint = new NPointCalibrate();
             ninePoint.Show();
+        }
+
+        // 配置
+        private void config_item_Click(object sender, EventArgs e) {
+            var config = new Config();
+            config.Show();
         }
 
         #endregion
