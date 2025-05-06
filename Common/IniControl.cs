@@ -18,12 +18,15 @@ namespace WindowsFormsApp1.Common {
 
         private IniControl() { }
 
+        public string Ip{ get; set; }
+        public int Port{ get; set; }
+
         // 基准点属性
-        // public float BaseX{ get; set; }
-        // public float BaseY{ get; set; }
-        // public float BaseAngle{ get; set; }
-        // public float RotateCenterX{ get; set; }
-        // public float RotateCenterY{ get; set; }
+        public float BaseX{ get; set; }
+        public float BaseY{ get; set; }
+        public float BaseAngle{ get; set; }
+        public float RotateCenterX{ get; set; }
+        public float RotateCenterY{ get; set; }
 
         // 加载文件
         public void LoadFile() {
@@ -35,6 +38,31 @@ namespace WindowsFormsApp1.Common {
 
         // 读取ini值
         public string Read(string field, string key) {
+            var result = _data?[field][key];
+            switch (key) {
+                case "BaseX":
+                    BaseX = Convert.ToSingle(result);
+                    break;
+                case "BaseY":
+                    BaseY = Convert.ToSingle(result);
+                    break;
+                case "BaseAngle":
+                    BaseAngle = Convert.ToSingle(result);
+                    break;
+                case "RotateCenterX":
+                    RotateCenterX = Convert.ToSingle(result);
+                    break;
+                case "RotateCenterY":
+                    RotateCenterY = Convert.ToSingle(result);
+                    break;
+                case "IP":
+                    Ip = result;
+                    break;
+                case "Port":
+                    Port = Convert.ToInt32(result);
+                    break;
+            }
+
             return _data?[field][key];
         }
 

@@ -52,18 +52,23 @@ namespace WindowsFormsApp1.Views.Forms {
             var y = (float)values["Y"];
 
             if (_caliTool == null) return;
-            
+
             if (serialNumber <= 3) {
                 _calibrationPoints.Add(serialNumber, new PointF(x, y));
                 Logger.Instance.AddLog($"{serialNumber}次坐标获取完成");
             }
-            
-            // 向PLC写入确认信息
-            await PlcControl.Instance.Write(PlcDataAddress.CenterCaliNumCheck.GetAddress(),
-                PlcControl.Instance.CenterCaliNum);
+
+            try {
+                // 向PLC写入确认信息
+                await PlcControl.Instance.Write(PlcDataAddress.CenterCaliNumCheck.GetAddress(),
+                    PlcControl.Instance.CenterCaliNum);
+            }
+            catch (Exception exception) {
+                Logger.Instance.AddLog(exception.Message);
+            }
 
             if (serialNumber != 3) return;
-            
+
             try {
                 var point = CalculateCircleCenter(_calibrationPoints[0], _calibrationPoints[1],
                     _calibrationPoints[2]);
@@ -101,9 +106,7 @@ namespace WindowsFormsApp1.Views.Forms {
             CameraControl.Instance.TakePhotoGraph();
         }
 
-        private void save_item_Click(object sender, EventArgs e) {
-            
-        }
+        private void save_item_Click(object sender, EventArgs e) { }
 
         private void result_item_Click(object sender, EventArgs e) {
             throw new System.NotImplementedException();

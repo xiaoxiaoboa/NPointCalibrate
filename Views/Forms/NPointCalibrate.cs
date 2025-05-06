@@ -64,44 +64,58 @@ namespace WindowsFormsApp1.Views.Forms {
             Logger.Instance.AddLog($"像素坐标，x:{x},y:{y}");
 
 
-            if (_caliTool != null) {
-                // 添加点对
-                _caliTool.Calibration.AddPointPair(x, y, PlcControl.Instance.RealX, PlcControl.Instance.RealY);
-                Logger.Instance.AddLog("添加点对成功：");
-                Logger.Instance.AddLog(
-                    $"像素坐，X:{x}Y:{y}，机械坐标：X:{PlcControl.Instance.RealX},Y:{PlcControl.Instance.RealY}");
+            if (_caliTool == null) return;
+            // 添加点对
+            _caliTool.Calibration.AddPointPair(x, y, PlcControl.Instance.RealX, PlcControl.Instance.RealY);
+            Logger.Instance.AddLog("添加点对成功：");
+            Logger.Instance.AddLog(
+                $"像素坐，X:{x}Y:{y}，机械坐标：X:{PlcControl.Instance.RealX},Y:{PlcControl.Instance.RealY}");
 
+            try {
                 // 写入九点矫正编号给plc,表示本次点对添加完成
                 await PlcControl.Instance.Write(PlcDataAddress.NineCaliNumCheck.GetAddress(),
                     PlcControl.Instance.NineCaliNum);
 
-                // 处理结果
-                if (serialNumber == 9) {
-                    Logger.Instance.AddLog("*****已完成九个点对，开始计算结果：*****");
+                // 处理偏移
+                await PlcControl.Instance.HandleOffset(PlcControl.Instance.MeasureNum);
+            }
+            catch (Exception exception) {
+                Logger.Instance.AddLog(exception.Message);
+            }
 
+            // 处理结果
+            if (serialNumber == 9) {
+                Logger.Instance.AddLog("*****已完成九个点对，开始计算结果：*****");
+
+                try {
+                    _caliTool.Calibration.Calibrate();
+                }
+                catch (Exception exception) {
+                    Logger.Instance.AddLog($"计算结果失败：{exception.Message}");
+                    return;
+                }
+
+                if (_caliTool.Calibration.Calibrated) {
+                    Logger.Instance.AddLog($"RMS：{_caliTool.Calibration.ComputedRMSError}");
+                    if (_caliTool.Calibration.ComputedRMSError > 30) {
+                        Logger.Instance.AddLog("结果不理想，请重新标定");
+                    }
+
+                    Logger.Instance.AddLog("正在保存文件，请勿退出窗口...");
                     try {
-                        _caliTool.Calibration.Calibrate();
-                    }
-                    catch (Exception exception) {
-                        Logger.Instance.AddLog($"计算结果失败：{exception.Message}");
-                        return;
-                    }
-
-                    if (_caliTool.Calibration.Calibrated) {
-                        Logger.Instance.AddLog($"RMS：{_caliTool.Calibration.ComputedRMSError}");
-                        if (_caliTool.Calibration.ComputedRMSError > 30) {
-                            Logger.Instance.AddLog("结果不理想，请重新标定");
-                        }
-
-                        Logger.Instance.AddLog("正在保存文件，请勿退出窗口...");
                         // 保存
                         await Task.Run(() => {
                             MyToolBlock.Instance.SaveVpp(MyToolBlock.Instance.IdentificationToolBlock,
                                 MyToolBlock.Instance.IdentificationVppPath);
                             // 重新加载识别vpp
                         });
-                        Logger.Instance.AddLog("操作已完成");
                     }
+                    catch (Exception exception) {
+                        Logger.Instance.AddLog(exception.Message);
+                        return;
+                    }
+
+                    Logger.Instance.AddLog("操作已完成");
                 }
             }
         }
@@ -141,8 +155,10 @@ namespace WindowsFormsApp1.Views.Forms {
         // 监听函数
         private async Task NinePointCalibrateListening() {
             try {
+                var measureNum = await PlcControl.Instance.Read<int>(PlcDataAddress.MeasureNum.GetAddress());
                 var x = await PlcControl.Instance.Read<uint>(PlcDataAddress.X.GetAddress());
                 var y = await PlcControl.Instance.Read<uint>(PlcDataAddress.Y.GetAddress());
+                PlcControl.Instance.MeasureNum = measureNum;
                 PlcControl.Instance.RealX = x.ConvertToFloat();
                 PlcControl.Instance.RealY = y.ConvertToFloat();
 

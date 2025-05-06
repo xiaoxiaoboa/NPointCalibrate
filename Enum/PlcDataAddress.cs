@@ -13,6 +13,11 @@ namespace WindowsFormsApp1.Enum {
         [PlcAddress("DB51.DBD24")] NineCaliNumCheck,
         [PlcAddress("DB51.DBD16")] CenterCaliNum,
         [PlcAddress("DB50.DBD12")] CenterCaliNumCheck,
+        [PlcAddress("DB51.DBD4")] OffsetX,
+        [PlcAddress("DB51.DBD8")] OffsetY,
+        [PlcAddress("DB51.DBD0")] OffsetR,
+        [PlcAddress("DB51.DBD12")] MeasureNumCheck,
+        [PlcAddress("DB50.DBD4")] MeasureNum,
     }
 
     [AttributeUsage(AttributeTargets.Field)]

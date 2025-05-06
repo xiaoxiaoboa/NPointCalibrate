@@ -205,8 +205,14 @@ namespace WindowsFormsApp1 {
         #endregion
 
         // 事件：toolblock 执行运行后
-        private void OnCalibrateToolBlockRan(object sender, EventArgs e) {
+        private async void OnCalibrateToolBlockRan(object sender, EventArgs e) {
             UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock);
+            try {
+                await PlcControl.Instance.HandleOffset(1);
+            }
+            catch (Exception exception) {
+                Logger.Instance.AddLog(exception.Message);
+            }
         }
 
         private void OnIdentificationToolBlockRan(object sender, EventArgs e) {

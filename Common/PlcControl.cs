@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using S7.Net;
+using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
 using Timer = System.Timers.Timer;
 
@@ -102,6 +104,42 @@ namespace WindowsFormsApp1.Common {
             }
             catch (Exception exception) {
                 throw new PlcException(ErrorCode.ReadData, "PLC读取数据失败", exception);
+            }
+        }
+
+        // 处理偏移
+        public async Task HandleOffset(int measureNum) {
+            if (measureNum != 1 && measureNum != 2) return;
+
+            var keys = new List<string> { "Angle", "X", "Y" };
+            var (res, values) =
+                MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.CalibrateToolBlock, keys);
+            if (!res) return;
+
+            var r = (float)values["Angle"] * (180 / Math.PI);
+            var x = (float)values["X"];
+            var y = (float)values["Y"];
+
+            try {
+                // 计算并写入PLC 
+                var offsetR = -(IniControl.Instance.BaseAngle - (float)r);
+                Instance.OffsetR = offsetR;
+                await Instance.Write(PlcDataAddress.OffsetR.GetAddress(), offsetR);
+
+                var offsetX = IniControl.Instance.BaseX - x;
+                Instance.OffsetX = offsetX;
+                await Instance.Write(PlcDataAddress.OffsetX.GetAddress(), offsetX);
+
+                var offsetY = IniControl.Instance.BaseY - y;
+                Instance.OffsetY = offsetY;
+                await Instance.Write(PlcDataAddress.OffsetY.GetAddress(), offsetY);
+
+                // 写入确认编号
+                await Instance.Write(PlcDataAddress.MeasureNumCheck.GetAddress(),
+                    measureNum);
+            }
+            catch (Exception exception) {
+                throw new Exception(exception.Message);
             }
         }
     }
