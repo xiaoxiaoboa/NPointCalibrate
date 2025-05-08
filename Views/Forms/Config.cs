@@ -45,16 +45,21 @@ namespace WindowsFormsApp1.Views.Forms {
             var baseAngle = textBox6.Text;
             var rotateY = textBox7.Text;
 
+            IniControl.Instance.BaseX = Convert.ToSingle(baseX);
+            IniControl.Instance.BaseY = Convert.ToSingle(baseY);
+            IniControl.Instance.BaseAngle = Convert.ToSingle(baseAngle);
+            IniControl.Instance.RotateCenterX = Convert.ToSingle(rotateX);
+            IniControl.Instance.RotateCenterY = Convert.ToSingle(rotateY);
+            IniControl.Instance.Ip = ip;
+            IniControl.Instance.Port = Convert.ToInt32(port);
 
-            IniControl.Instance.Write("PlcConfig", "IP", ip);
-            IniControl.Instance.Write("PlcConfig", "Port", port);
-            IniControl.Instance.Write("PointConfig", "BaseX", baseX);
-            IniControl.Instance.Write("PointConfig", "BaseY", baseY);
-            IniControl.Instance.Write("PointConfig", "RotateCenterX", rotateX);
-            IniControl.Instance.Write("PointConfig", "BaseAngle", baseAngle);
-            IniControl.Instance.Write("PointConfig", "RotateCenterY", rotateY);
-
-            MessageBox.Show(@"保存成功");
+            try {
+                IniControl.Instance.SaveFile();
+                MessageBox.Show(@"保存成功");
+            }
+            catch (Exception exception) {
+                Logger.Instance.AddLog(exception.Message);
+            }
         }
     }
 }

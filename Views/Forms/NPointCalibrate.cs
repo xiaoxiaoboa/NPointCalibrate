@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Cognex.VisionPro;
 using Cognex.VisionPro.CalibFix;
 using S7.Net;
 using WindowsFormsApp1.Common;
@@ -20,6 +21,7 @@ namespace WindowsFormsApp1.Views.Forms {
 
         private void NPointCalibrate_Load(object sender, EventArgs e) {
             MyToolBlock.Instance.CalibrateToolBlock.Ran += CalibrateToolBlockOnRan;
+            MyToolBlock.Instance.IdentificationToolBlock.Ran += IdentificationToolBlockOnRan;
 
             // 获取CogCalibNPointToNPointTool
             _caliTool = MyToolBlock.Instance.GetTool<CogCalibNPointToNPointTool>(
@@ -34,6 +36,13 @@ namespace WindowsFormsApp1.Views.Forms {
             }
             else {
                 action();
+            }
+        }
+
+        private void IdentificationToolBlockOnRan(object sender, EventArgs e) {
+
+            if (MyToolBlock.Instance.IdentificationToolBlock.RunStatus.Result == CogToolResultConstants.Accept) {
+                
             }
         }
 
@@ -80,7 +89,7 @@ namespace WindowsFormsApp1.Views.Forms {
                 await PlcControl.Instance.HandleOffset(PlcControl.Instance.MeasureNum);
             }
             catch (Exception exception) {
-                Logger.Instance.AddLog(exception.Message);
+                Logger.Instance.AddLog($"偏移计算失败：{exception.Message}");
             }
 
             // 处理结果
@@ -114,6 +123,8 @@ namespace WindowsFormsApp1.Views.Forms {
                         Logger.Instance.AddLog(exception.Message);
                         return;
                     }
+
+                    // MyToolBlock.Instance.IdentificationToolBlock.Run();
 
                     Logger.Instance.AddLog("操作已完成");
                 }
@@ -152,7 +163,7 @@ namespace WindowsFormsApp1.Views.Forms {
             Logger.Instance.AddLog("窗口事件已清除，窗口退出");
         }
 
-        // 监听函数
+        // 监听器执行的函数
         private async Task NinePointCalibrateListening() {
             try {
                 var measureNum = await PlcControl.Instance.Read<int>(PlcDataAddress.MeasureNum.GetAddress());
@@ -166,6 +177,7 @@ namespace WindowsFormsApp1.Views.Forms {
                 // 限制
                 if (PlcControl.Instance.NineCaliNum != nineCaliNum && nineCaliNum != 0) {
                     PlcControl.Instance.NineCaliNum = nineCaliNum.ConvertToInt();
+                    // 读取到数据后执行拍照
                     OnNPointCalibrateChanged();
                 }
             }

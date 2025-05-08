@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -50,6 +51,7 @@ namespace WindowsFormsApp1.Common {
         // 启动监听
         public void StartListener(int interval, Func<Task> callback) {
             if (!IsConnected) throw new Exception("PLC 未连接");
+            if (_timer != null) return;
 
             _timer = new Timer();
             _timer.Interval = interval; // 每 1000ms 读取一次
@@ -65,8 +67,8 @@ namespace WindowsFormsApp1.Common {
 
         // 连接
         public void Connect() {
-            var ip = IniControl.Instance.Read("PLC", "IP");
-            var port = IniControl.Instance.Read("PLC", "Port");
+            var ip = IniControl.Instance.Read("PlcConfig", "IP");
+            var port = IniControl.Instance.Read("PlcConfig", "Port");
             if (_plc != null && _plc.IsConnected)
                 return;
             _plc = new Plc(CpuType.S71500, ip, Convert.ToInt32(port), 0, 1);
@@ -103,7 +105,7 @@ namespace WindowsFormsApp1.Common {
                 await _plc.WriteAsync(address, value);
             }
             catch (Exception exception) {
-                throw new PlcException(ErrorCode.ReadData, "PLC读取数据失败", exception);
+                throw new Exception("PLC读取数据失败", exception);
             }
         }
 
@@ -116,30 +118,34 @@ namespace WindowsFormsApp1.Common {
                 MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.CalibrateToolBlock, keys);
             if (!res) return;
 
-            var r = (float)values["Angle"] * (180 / Math.PI);
-            var x = (float)values["X"];
-            var y = (float)values["Y"];
+            var r = Convert.ToSingle(values["Angle"]) * (180 / Math.PI);
+            var x = Convert.ToSingle(values["X"]);
+            var y = Convert.ToSingle(values["Y"]);
 
             try {
                 // 计算并写入PLC 
                 var offsetR = -(IniControl.Instance.BaseAngle - (float)r);
                 Instance.OffsetR = offsetR;
-                await Instance.Write(PlcDataAddress.OffsetR.GetAddress(), offsetR);
+                await Write(PlcDataAddress.OffsetR.GetAddress(), offsetR);
 
                 var offsetX = IniControl.Instance.BaseX - x;
                 Instance.OffsetX = offsetX;
-                await Instance.Write(PlcDataAddress.OffsetX.GetAddress(), offsetX);
+                await Write(PlcDataAddress.OffsetX.GetAddress(), offsetX);
 
                 var offsetY = IniControl.Instance.BaseY - y;
                 Instance.OffsetY = offsetY;
-                await Instance.Write(PlcDataAddress.OffsetY.GetAddress(), offsetY);
+                await Write(PlcDataAddress.OffsetY.GetAddress(), offsetY);
 
                 // 写入确认编号
                 await Instance.Write(PlcDataAddress.MeasureNumCheck.GetAddress(),
                     measureNum);
+
+                Logger.Instance.AddLog($"offsetR:{offsetR}");
+                Logger.Instance.AddLog($"offsetR:{offsetX}");
+                Logger.Instance.AddLog($"offsetR:{offsetY}");
             }
             catch (Exception exception) {
-                throw new Exception(exception.Message);
+                throw new Exception($"偏移计算失败：{exception.Message}");
             }
         }
     }

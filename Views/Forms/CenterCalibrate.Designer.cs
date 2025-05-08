@@ -32,7 +32,7 @@ namespace WindowsFormsApp1.Views.Forms {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CenterCalibrate));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.operate = new System.Windows.Forms.ToolStripMenuItem();
-            this.save_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.listen_item = new System.Windows.Forms.ToolStripMenuItem();
             this.result_item = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.cogRecordDisplay1 = new Cognex.VisionPro.CogRecordDisplay();
@@ -51,19 +51,21 @@ namespace WindowsFormsApp1.Views.Forms {
             // 
             // operate
             // 
-            this.operate.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.save_item, this.result_item });
+            this.operate.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.listen_item, this.result_item });
             this.operate.Name = "operate";
             this.operate.Size = new System.Drawing.Size(51, 24);
             this.operate.Text = "操作";
             // 
-            // save_item
+            // listen_item
             // 
-            this.save_item.Name = "save_item";
-            this.save_item.Size = new System.Drawing.Size(138, 24);
-            this.save_item.Text = "保存";
+            this.listen_item.Name = "listen_item";
+            this.listen_item.Size = new System.Drawing.Size(138, 24);
+            this.listen_item.Text = "监听";
+            this.listen_item.Click += new System.EventHandler(this.listen_item_Click);
             // 
             // result_item
             // 
+            this.result_item.Enabled = false;
             this.result_item.Name = "result_item";
             this.result_item.Size = new System.Drawing.Size(138, 24);
             this.result_item.Text = "查看结果";
@@ -96,7 +98,9 @@ namespace WindowsFormsApp1.Views.Forms {
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "CenterCalibrate";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CenterCalibrate";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CenterCalibrate_FormClosing);
             this.Load += new System.EventHandler(this.CenterCalibrate_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -105,9 +109,10 @@ namespace WindowsFormsApp1.Views.Forms {
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.ToolStripMenuItem listen_item;
+
         private Cognex.VisionPro.CogRecordDisplay cogRecordDisplay1;
 
-        private System.Windows.Forms.ToolStripMenuItem save_item;
         private System.Windows.Forms.ToolStripMenuItem result_item;
         private System.Windows.Forms.ToolTip toolTip1;
 

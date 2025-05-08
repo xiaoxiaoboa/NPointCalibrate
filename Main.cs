@@ -109,7 +109,7 @@ namespace WindowsFormsApp1 {
         ) {
             display.Invoke((MethodInvoker)delegate { display.SetRecord(toolBlock.CreateLastRunRecord()); });
 
-            Logger.Instance.AddLog("图像处理完成，已加载到标定RecordDisplay");
+            Logger.Instance.AddLog("图像处理完成，已加载到RecordDisplay");
         }
 
         #endregion
@@ -206,38 +206,27 @@ namespace WindowsFormsApp1 {
 
         // 事件：toolblock 执行运行后
         private async void OnCalibrateToolBlockRan(object sender, EventArgs e) {
-            UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock);
-            try {
-                await PlcControl.Instance.HandleOffset(1);
+            if (MyToolBlock.Instance.CalibrateToolBlock.RunStatus.Result == CogToolResultConstants.Accept) {
+                UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock);
+                try {
+                    await PlcControl.Instance.HandleOffset(1);
+                }
+                catch (Exception exception) {
+                    Logger.Instance.AddLog(exception.Message);
+                }
             }
-            catch (Exception exception) {
-                Logger.Instance.AddLog(exception.Message);
+            else {
+                Logger.Instance.AddLog("标定ToolBlock运行失败");
             }
         }
 
         private void OnIdentificationToolBlockRan(object sender, EventArgs e) {
-            // UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock);
-            // Logger.Instance.AddLog("准备获取识别ToolBlock结果，向PLC发送...");
-            // var keys = new List<string>() { "Angle", "X", "Y" };
-            // var (res, values) =
-            //     MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.IdentificationToolBlock, keys);
-            //
-            // var angle = (float)values["Angle"];
-            // var x = (float)values["X"];
-            // var y = (float)values["Y"];
-            //
-            // // 弧度转角度
-            // angle = (float)(180 / Math.PI) * angle;
-            // float offsetR = angle * -1;
-            // PlcControl.Instance.OffsetR = offsetR;
-            //
-            // float offsetX = x * -1;
-            // float offsetY = y * -1;
-            //
-            // PlcControl.Instance.OffsetX = offsetX;
-            // PlcControl.Instance.OffsetY = offsetY;
-            //
-            // Logger.Instance.AddLog($"x偏移：{offsetX}，y偏移：{offsetY}，r偏移：{offsetR}");
+            if (MyToolBlock.Instance.IdentificationToolBlock.RunStatus.Result == CogToolResultConstants.Accept) {
+                UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock);
+            }
+            else {
+                Logger.Instance.AddLog("识别ToolBlock运行失败");
+            }
         }
 
         // 传图像给toolblock
@@ -264,10 +253,14 @@ namespace WindowsFormsApp1 {
                 var image = CameraControl.Instance.GetGraphic();
                 RunOnUIThread(() => { myDisplay2.SetGraphic(image); });
 
+                // 传图片给标定toolblock并运行
                 ImageToToolBlock(MyToolBlock.Instance.CalibrateToolBlock, image,
                     () => MyToolBlock.Instance.CalibrateToolBlock.Run());
-                ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image);
 
+                // 传图片给识别toolblock并运行
+                // ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image, () =>
+                //     MyToolBlock.Instance.IdentificationToolBlock.Run()
+                // );
 
                 CameraControl.Instance.IsShooting = false;
                 RunOnUIThread(() => { takePho.Enabled = true; });
@@ -447,6 +440,9 @@ namespace WindowsFormsApp1 {
 
             // 关闭main窗口时，也关闭登录窗口
             OnMainFormClose?.Invoke(this, EventArgs.Empty);
+
+            // 保存ini文件
+            IniControl.Instance.SaveFile();
         }
 
         // 加载标定作业tb vpp
@@ -454,6 +450,7 @@ namespace WindowsFormsApp1 {
             await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
             MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
             MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
+            ninePointCali_item.Enabled = true;
         }
 
         // 加载识别作业tb vpp
@@ -461,6 +458,7 @@ namespace WindowsFormsApp1 {
             await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
             MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
+            fittingRotation_item.Enabled = true;
         }
 
         // 标定和识别作业同时加载
@@ -472,16 +470,13 @@ namespace WindowsFormsApp1 {
             MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
+
+            ninePointCali_item.Enabled = true;
+            fittingRotation_item.Enabled = true;
         }
 
         // 打开九点标定窗口
         private void ninePointCali_item_Click(object sender, EventArgs e) {
-            if (MyToolBlock.Instance.CalibrateToolBlock == null ||
-                MyToolBlock.Instance.IdentificationToolBlock == null) {
-                Logger.Instance.AddLog("标定和识别ToolBlock未加载！！！");
-                return;
-            }
-
             Logger.Instance.AddLog("打开九点标定窗口");
             var ninePoint = new NPointCalibrate();
             ninePoint.Show();
@@ -491,6 +486,12 @@ namespace WindowsFormsApp1 {
         private void config_item_Click(object sender, EventArgs e) {
             var config = new Config();
             config.Show();
+        }
+
+        private void fittingRotation_item_Click(object sender, EventArgs e) {
+            Logger.Instance.AddLog("打开拟合窗口");
+            var centerCalibrate = new CenterCalibrate();
+            centerCalibrate.Show();
         }
 
         #endregion

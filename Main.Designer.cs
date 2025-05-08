@@ -650,15 +650,20 @@ namespace WindowsFormsApp1 {
             // 
             // fittingRotation_item
             // 
+            this.fittingRotation_item.Enabled = false;
             this.fittingRotation_item.Name = "fittingRotation_item";
-            this.fittingRotation_item.Size = new System.Drawing.Size(138, 24);
+            this.fittingRotation_item.Size = new System.Drawing.Size(152, 24);
             this.fittingRotation_item.Text = "拟合旋转";
+            this.fittingRotation_item.ToolTipText = "加载识别ToolBlock后可选择";
+            this.fittingRotation_item.Click += new System.EventHandler(this.fittingRotation_item_Click);
             // 
             // ninePointCali_item
             // 
+            this.ninePointCali_item.Enabled = false;
             this.ninePointCali_item.Name = "ninePointCali_item";
-            this.ninePointCali_item.Size = new System.Drawing.Size(138, 24);
+            this.ninePointCali_item.Size = new System.Drawing.Size(152, 24);
             this.ninePointCali_item.Text = "九点标定";
+            this.ninePointCali_item.ToolTipText = "加载标定ToolBlock后可选择";
             this.ninePointCali_item.Click += new System.EventHandler(this.ninePointCali_item_Click);
             // 
             // Main

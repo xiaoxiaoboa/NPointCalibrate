@@ -15,7 +15,6 @@ namespace WindowsFormsApp1.Views.Forms {
         }
 
         public void SetRecord(ICogRecord record) {
-            // cogRecordsDisplay1.Record = record;
             cogRecordsDisplay1.Subject = record;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Forms;
 using IniParser;
 using System.IO;
@@ -74,6 +75,21 @@ namespace WindowsFormsApp1.Common {
             }
             else {
                 Logger.Instance.AddLog("无法写入，ini文件不存在");
+            }
+        }
+
+        public void SaveFile() {
+            try {
+                Instance.Write("PlcConfig", "IP", Ip);
+                Instance.Write("PlcConfig", "Port", Port.ToString());
+                Instance.Write("PointConfig", "BaseX", BaseX.ToString(CultureInfo.CurrentCulture));
+                Instance.Write("PointConfig", "BaseY", BaseY.ToString(CultureInfo.CurrentCulture));
+                Instance.Write("PointConfig", "RotateCenterX", RotateCenterX.ToString(CultureInfo.CurrentCulture));
+                Instance.Write("PointConfig", "BaseAngle", BaseAngle.ToString(CultureInfo.CurrentCulture));
+                Instance.Write("PointConfig", "RotateCenterY", RotateCenterY.ToString(CultureInfo.CurrentCulture));
+            }
+            catch (Exception exception) {
+                throw new Exception(exception.Message);
             }
         }
     }
