@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using S7.Net;
 using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
 using Timer = System.Timers.Timer;
 
-namespace WindowsFormsApp1.Common {
-    public class PlcControl {
+namespace WindowsFormsApp1.Common
+{
+    public class PlcControl
+    {
         private static readonly Lazy<PlcControl> _instance = new Lazy<PlcControl>(() => new PlcControl());
         private Plc _plc;
 
@@ -21,35 +20,38 @@ namespace WindowsFormsApp1.Common {
         public static PlcControl Instance => _instance.Value;
 
         // DB50
-        public int FaultCode{ get; set; }
-        public int MeasureNum{ get; set; }
+        public int FaultCode { get; set; }
+        public int MeasureNum { get; set; }
 
 
-        public int NineCaliNum{ get; set; }
+        public int NineCaliNum { get; set; }
 
-        public int CenterCaliNum{ get; set; }
-        public int CurrentControlMode{ get; set; }
-        public float RealX{ get; set; }
-        public float RealY{ get; set; }
-        public float RealZ{ get; set; }
+        public int CenterCaliNum { get; set; }
+        public int CurrentControlMode { get; set; }
+        public float RealX { get; set; }
+        public float RealY { get; set; }
+        public float RealZ { get; set; }
 
-        public float RealR{ get; set; }
+        public float RealR { get; set; }
 
         // DB51
-        public float OffsetR{ get; set; }
-        public float OffsetX{ get; set; }
-        public float OffsetY{ get; set; }
-        public int MeasureNumCheck{ get; set; }
-        public int CenterCaliNumCheck{ get; set; }
-        public int FeedPosition{ get; set; }
-        public int NineCaliNumCheck{ get; set; }
-        public int ControlMode{ get; set; }
+        public float OffsetR { get; set; }
+        public float OffsetX { get; set; }
+        public float OffsetY { get; set; }
+        public int MeasureNumCheck { get; set; }
+        public int CenterCaliNumCheck { get; set; }
+        public int FeedPosition { get; set; }
+        public int NineCaliNumCheck { get; set; }
+        public int ControlMode { get; set; }
 
 
-        private PlcControl() { }
+        private PlcControl()
+        {
+        }
 
         // 启动监听
-        public void StartListener(int interval, Func<Task> callback) {
+        public void StartListener(int interval, Func<Task> callback)
+        {
             if (!IsConnected) throw new Exception("PLC 未连接");
             if (_timer != null) return;
 
@@ -60,13 +62,16 @@ namespace WindowsFormsApp1.Common {
             _timer.Start();
         }
 
-        public void StopListener() {
+        public void StopListener()
+        {
             _timer?.Stop();
+            _timer = null;
         }
 
 
         // 连接
-        public void Connect() {
+        public void Connect()
+        {
             var ip = IniControl.Instance.Read("PlcConfig", "IP");
             var port = IniControl.Instance.Read("PlcConfig", "Port");
             if (_plc != null && _plc.IsConnected)
@@ -77,8 +82,10 @@ namespace WindowsFormsApp1.Common {
         }
 
         // 断开
-        public void Disconnect() {
-            if (_plc != null && _plc.IsConnected) {
+        public void Disconnect()
+        {
+            if (_plc != null && _plc.IsConnected)
+            {
                 _plc.Close();
                 _plc = null;
             }
@@ -87,30 +94,37 @@ namespace WindowsFormsApp1.Common {
         }
 
         // 读plc
-        public async Task<T> Read<T>(string address) {
-            try {
+        public async Task<T> Read<T>(string address)
+        {
+            try
+            {
                 if (!IsConnected) throw new Exception("PLC未连接");
                 var result = await _plc.ReadAsync(address);
                 return (T)Convert.ChangeType(result, typeof(T));
             }
-            catch (Exception exception) {
+            catch (Exception exception)
+            {
                 throw new Exception($"读取数据失败：{exception.Message}");
             }
         }
 
         // 写plc
-        public async Task Write(string address, object value) {
-            try {
+        public async Task Write(string address, object value)
+        {
+            try
+            {
                 if (!IsConnected) throw new InvalidOperationException("PLC 未连接");
                 await _plc.WriteAsync(address, value);
             }
-            catch (Exception exception) {
+            catch (Exception exception)
+            {
                 throw new Exception("PLC读取数据失败", exception);
             }
         }
 
         // 处理偏移
-        public async Task HandleOffset(int measureNum) {
+        public async Task HandleOffset(int measureNum)
+        {
             if (measureNum != 1 && measureNum != 2) return;
 
             var keys = new List<string> { "Angle", "X", "Y" };
@@ -122,7 +136,8 @@ namespace WindowsFormsApp1.Common {
             var x = Convert.ToSingle(values["X"]);
             var y = Convert.ToSingle(values["Y"]);
 
-            try {
+            try
+            {
                 // 计算并写入PLC 
                 var offsetR = -(IniControl.Instance.BaseAngle - (float)r);
                 Instance.OffsetR = offsetR;
@@ -144,7 +159,8 @@ namespace WindowsFormsApp1.Common {
                 Logger.Instance.AddLog($"offsetR:{offsetX}");
                 Logger.Instance.AddLog($"offsetR:{offsetY}");
             }
-            catch (Exception exception) {
+            catch (Exception exception)
+            {
                 throw new Exception($"偏移计算失败：{exception.Message}");
             }
         }

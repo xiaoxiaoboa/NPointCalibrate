@@ -31,25 +31,37 @@ namespace WindowsFormsApp1.Common.Login {
 
         // 从文件获取数据
         public void Initialize() {
-            var lines = File.ReadAllLines(_path);
-            for (int i = 1; i < lines.Length; i++) {
-                var columns = lines[i].Split(',');
-                var userName = columns[0];
-                var password = columns[1];
-                var flag = int.Parse(columns[2]);
-                var lastLogin = int.Parse(columns[3]);
-                // 记住密码的用户
-                if (flag == 1) {
-                    _flagUsers.Add(new User(userName, password, flag, lastLogin));
+            try
+            {
+                if (!File.Exists(_path))
+                {
+                    throw new FileNotFoundException("users.csv not found");
                 }
+                var lines = File.ReadAllLines(_path);
+                for (int i = 1; i < lines.Length; i++) {
+                    var columns = lines[i].Split(',');
+                    var userName = columns[0];
+                    var password = columns[1];
+                    var flag = int.Parse(columns[2]);
+                    var lastLogin = int.Parse(columns[3]);
+                    // 记住密码的用户
+                    if (flag == 1) {
+                        _flagUsers.Add(new User(userName, password, flag, lastLogin));
+                    }
 
-                // 最后一次登录的用户
-                if (lastLogin == 1) {
-                    LastLoginUser = new User(userName, password, flag, lastLogin);
+                    // 最后一次登录的用户
+                    if (lastLogin == 1) {
+                        LastLoginUser = new User(userName, password, flag, lastLogin);
+                    }
+
+                    _users.Add(new User(userName, password, flag, lastLogin));
                 }
-
-                _users.Add(new User(userName, password, flag, lastLogin));
             }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+           
         }
 
 

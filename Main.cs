@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cognex.VisionPro;
 using Cognex.VisionPro.ToolBlock;
-using S7.Net;
 using WindowsFormsApp1.Common;
 using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
@@ -66,12 +65,11 @@ namespace WindowsFormsApp1 {
         private async void InitCamera() {
             initCameraMenu_item.Enabled = false;
             initCamera.Enabled = false;
-            string errorMessage;
 
             Logger.Instance.AddLog("相机初始化中...");
 
 
-            errorMessage = await CameraControl.Instance.Initialize();
+            var errorMessage = await CameraControl.Instance.Initialize();
 
             if (errorMessage != null) {
                 Logger.Instance.AddLog($@"相机连接错误：{errorMessage}", LogLevel.Error);
@@ -258,9 +256,9 @@ namespace WindowsFormsApp1 {
                     () => MyToolBlock.Instance.CalibrateToolBlock.Run());
 
                 // 传图片给识别toolblock并运行
-                // ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image, () =>
-                //     MyToolBlock.Instance.IdentificationToolBlock.Run()
-                // );
+                ImageToToolBlock(MyToolBlock.Instance.IdentificationToolBlock, image, () =>
+                    MyToolBlock.Instance.IdentificationToolBlock.Run()
+                );
 
                 CameraControl.Instance.IsShooting = false;
                 RunOnUIThread(() => { takePho.Enabled = true; });

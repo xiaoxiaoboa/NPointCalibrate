@@ -28,7 +28,7 @@ namespace WindowsFormsApp1.Common.CogTools {
                     if (_cogFrameGrabbers.Count > 0) {
                         _cogFrameGrabber = _cogFrameGrabbers[0];
                         _cogAcqFifo = _cogFrameGrabber.CreateAcqFifo("Generic GigEVision (RGB8)",
-                            CogAcqFifoPixelFormatConstants.Format32RGB, 0, true);
+                            CogAcqFifoPixelFormatConstants.Format3Plane, 0, true);
                     }
                     else {
                         throw new Exception("无相机连接");
