@@ -62,14 +62,16 @@ namespace WindowsFormsApp1.Views.Forms
             );
 
 
-            var x = (float)values["X"];
-            var y = (float)values["Y"];
+            var x = Convert.ToSingle(values["X"]);
+            var y = Convert.ToSingle(values["Y"]);
 
             if (_caliTool == null) return;
 
             if (serialNumber <= 3)
             {
                 _calibrationPoints.Add(serialNumber, new PointF(x, y));
+                Logger.Instance.AddLog($"X:{x}");
+                Logger.Instance.AddLog($"Y:{y}");
                 Logger.Instance.AddLog($"{serialNumber}次坐标获取完成");
             }
 
@@ -94,6 +96,7 @@ namespace WindowsFormsApp1.Views.Forms
                 // 存圆心坐标
                 IniControl.Instance.RotateCenterX = point.X;
                 IniControl.Instance.RotateCenterY = point.Y;
+                IniControl.Instance.SaveFile();
                 Logger.Instance.AddLog($"圆心计算完成，x：{point.X}，y：{point.Y}");
 
                 RunOnUIThread(() =>

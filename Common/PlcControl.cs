@@ -196,10 +196,6 @@ namespace WindowsFormsApp1.Common
                 // 写入确认编号
                 await Instance.Write(PlcDataAddress.MeasureNumCheck.GetAddress(),
                     measureNum);
-
-                Logger.Instance.AddLog($"offsetR:{offsetR}");
-                Logger.Instance.AddLog($"offsetR:{offsetX}");
-                Logger.Instance.AddLog($"offsetR:{offsetY}");
             }
             catch (Exception exception)
             {

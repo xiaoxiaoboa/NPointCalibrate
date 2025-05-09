@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Forms;
 using WindowsFormsApp1.Common;
 
@@ -8,21 +9,13 @@ namespace WindowsFormsApp1.Views.Forms {
             InitializeComponent();
 
             try {
-                var ip = IniControl.Instance.Read("PlcConfig", "IP");
-                var port = IniControl.Instance.Read("PlcConfig", "Port");
-                var baseX = IniControl.Instance.Read("PointConfig", "BaseX");
-                var baseY = IniControl.Instance.Read("PointConfig", "BaseY");
-                var baseAngle = IniControl.Instance.Read("PointConfig", "BaseAngle");
-                var rotateX = IniControl.Instance.Read("PointConfig", "RotateCenterX");
-                var rotateY = IniControl.Instance.Read("PointConfig", "RotateCenterY");
-
-                textBox1.Text = baseX;
-                textBox2.Text = ip;
-                textBox3.Text = port;
-                textBox4.Text = baseY;
-                textBox5.Text = rotateX;
-                textBox6.Text = baseAngle;
-                textBox7.Text = rotateY;
+                textBox1.Text = IniControl.Instance.BaseX.ToString(CultureInfo.CurrentCulture);
+                textBox2.Text = IniControl.Instance.Ip;
+                textBox3.Text = IniControl.Instance.Port.ToString();
+                textBox4.Text = IniControl.Instance.BaseY.ToString(CultureInfo.CurrentCulture);
+                textBox5.Text = IniControl.Instance.RotateCenterX.ToString(CultureInfo.CurrentCulture);
+                textBox6.Text = IniControl.Instance.BaseAngle.ToString(CultureInfo.CurrentCulture);
+                textBox7.Text = IniControl.Instance.RotateCenterY.ToString(CultureInfo.CurrentCulture);
             }
             catch (Exception exception) {
                 Logger.Instance.AddLog(exception.Message);
