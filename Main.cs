@@ -235,8 +235,6 @@ namespace WindowsFormsApp1 {
                 }
 
                 toolBlock.Inputs["InputImage"].Value = image;
-
-
                 // 传进图像后，执行toolblock
                 callback?.Invoke();
             }

@@ -20,6 +20,16 @@ namespace WindowsFormsApp1.Common.CogTools {
         private CameraControl() { }
 
         // 初始化相机
+        /// <summary>
+        /// 初始化相机。
+        /// 该方法通过异步任务初始化相机设备，尝试连接可用的相机并创建帧捕获队列。
+        /// 如果未检测到相机设备或初始化失败，则返回错误信息。
+        /// </summary>
+        /// <returns>
+        /// 返回一个表示初始化结果的字符串。
+        /// 如果初始化成功，返回 null；
+        /// 如果初始化失败，返回异常消息。
+        /// </returns>
         public async Task<string> Initialize() {
             return await Task.Run(() => {
                 try {
@@ -43,6 +53,16 @@ namespace WindowsFormsApp1.Common.CogTools {
         }
 
         // 拍照
+        /// <summary>
+        /// 触发相机进行拍照操作。
+        /// 该方法尝试启动相机的帧捕获过程，并在成功时返回 null。
+        /// 如果在拍照过程中发生异常，将捕获异常并返回错误信息。
+        /// </summary>
+        /// <returns>
+        /// 返回一个表示拍照结果的字符串。
+        /// 如果拍照成功，返回 null；
+        /// 如果拍照失败，返回包含异常信息的错误消息。
+        /// </returns>
         public string TakePhotoGraph() {
             try {
                 IsShooting = true;
@@ -56,6 +76,15 @@ namespace WindowsFormsApp1.Common.CogTools {
         }
 
         // 获取拍照后的图像
+        /// <summary>
+        /// 获取拍照后的图像。
+        /// 该方法从帧捕获队列中检查是否有可用的图像。如果队列中有准备好的图像，则获取并返回该图像。
+        /// 如果队列中没有可用图像，则抛出异常，提示拍照失败。
+        /// </summary>
+        /// <returns>
+        /// 返回一个包含图像数据的对象，该对象实现了 ICogImage 接口。
+        /// 如果没有可用图像，将抛出 IOException 异常。
+        /// </returns>
         public ICogImage GetGraphic() {
             _cogAcqFifo.GetFifoState(out int numPending, out int numReady, out bool busy);
             if (numReady > 0) {
