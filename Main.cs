@@ -13,8 +13,10 @@ using WindowsFormsApp1.Enum;
 using WindowsFormsApp1.Interface;
 using WindowsFormsApp1.Views.Forms;
 
-namespace WindowsFormsApp1 {
-    public partial class Main : Form {
+namespace WindowsFormsApp1
+{
+    public partial class Main : Form
+    {
         #region 属性
 
         // 控制子控件放大缩小的相关属性
@@ -33,9 +35,12 @@ namespace WindowsFormsApp1 {
         // 登录窗口事件
         public event EventHandler OnMainFormClose;
 
+        private const int TimerInterval = 1000;
+
         #endregion
 
-        public Main() {
+        public Main()
+        {
             InitializeComponent();
             InitializeChildControls();
 
@@ -53,7 +58,8 @@ namespace WindowsFormsApp1 {
         #region 方法
 
         // 加载vpp
-        private async Task LoadVpp(string toolBlockVppPath, LoadToolBlock loadToolBlock) {
+        private async Task LoadVpp(string toolBlockVppPath, LoadToolBlock loadToolBlock)
+        {
             Logger.Instance.AddLog("加载ToolBlock vpp...");
 
             var (message, logLevel) = await MyToolBlock.Instance.LoadToolBlockVpp(toolBlockVppPath, loadToolBlock);
@@ -62,7 +68,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 初始化相机
-        private async void InitCamera() {
+        private async void InitCamera()
+        {
             initCameraMenu_item.Enabled = false;
             initCamera.Enabled = false;
 
@@ -71,7 +78,8 @@ namespace WindowsFormsApp1 {
 
             var errorMessage = await CameraControl.Instance.Initialize();
 
-            if (errorMessage != null) {
+            if (errorMessage != null)
+            {
                 Logger.Instance.AddLog($@"相机连接错误：{errorMessage}", LogLevel.Error);
                 initCamera.Enabled = true;
                 initCameraMenu_item.Enabled = true;
@@ -91,11 +99,14 @@ namespace WindowsFormsApp1 {
         }
 
         // 恢复控件到UI线程执行
-        private void RunOnUIThread(Action action) {
-            if (InvokeRequired) {
+        private void RunOnUIThread(Action action)
+        {
+            if (InvokeRequired)
+            {
                 Invoke(action);
             }
-            else {
+            else
+            {
                 action();
             }
         }
@@ -104,7 +115,8 @@ namespace WindowsFormsApp1 {
         private void UpdateRecordDisplay(
             MyRecordDisplay display,
             CogToolBlock toolBlock
-        ) {
+        )
+        {
             display.Invoke((MethodInvoker)delegate { display.SetRecord(toolBlock.CreateLastRunRecord()); });
 
             Logger.Instance.AddLog("图像处理完成，已加载到RecordDisplay");
@@ -115,11 +127,13 @@ namespace WindowsFormsApp1 {
         #region 事件
 
         // listview更新事件
-        private void LogListOnListChanged(object sender, ListChangedEventArgs e) {
+        private void LogListOnListChanged(object sender, ListChangedEventArgs e)
+        {
             var log = Logger.Instance.Logs.LastOrDefault();
             var item = new ListViewItem(log?.TimeStamp);
 
-            RunOnUIThread(() => {
+            RunOnUIThread(() =>
+            {
                 item.SubItems.Add(log?.Level.ToString());
                 item.SubItems.Add(log?.Message);
                 listView1.Items.Add(item);
@@ -130,7 +144,8 @@ namespace WindowsFormsApp1 {
         #region 控制cogDisplay放大缩小
 
         // 初始化子控件控制
-        private void InitializeChildControls() {
+        private void InitializeChildControls()
+        {
             RegisterControl(myDisplay1, panel5, "实时预览");
             RegisterControl(myDisplay2, panel6, "一次拍照");
             RegisterControl(myRecordDisplay1, panel7, "标定RecordDisplay");
@@ -139,35 +154,42 @@ namespace WindowsFormsApp1 {
         }
 
         // 注册子控件事件
-        private void RegisterControl(Control control, Panel parent, string labelText = "") {
+        private void RegisterControl(Control control, Panel parent, string labelText = "")
+        {
             var info = new ChildControlInfo(control, parent, control.Dock);
             _controlInfos.Add(control, info);
 
-            if (control is IMyControl display) {
+            if (control is IMyControl display)
+            {
                 display.SetLabelText(labelText);
                 display.MaximizeRestoreRequested += UserControl_MaximizeRestoreRequested;
             }
         }
 
         // 控制事件
-        private void UserControl_MaximizeRestoreRequested(object sender, EventArgs e) {
+        private void UserControl_MaximizeRestoreRequested(object sender, EventArgs e)
+        {
             var requestedControl = sender as Control;
-            if (requestedControl == null || !_controlInfos.TryGetValue(requestedControl, out var requestedInfo)) {
+            if (requestedControl == null || !_controlInfos.TryGetValue(requestedControl, out var requestedInfo))
+            {
                 return; // 无效的请求
             }
 
 
-            if (_childControlInfo == null) {
+            if (_childControlInfo == null)
+            {
                 MaximizeControl(requestedInfo);
             }
 
-            else if (_childControlInfo == requestedInfo) {
+            else if (_childControlInfo == requestedInfo)
+            {
                 RestoreControl(requestedInfo);
             }
         }
 
         // 最大化控制
-        private void MaximizeControl(ChildControlInfo info) {
+        private void MaximizeControl(ChildControlInfo info)
+        {
             if (info == null) return;
 
             _childControlInfo = info; // 记录哪个被最大化了
@@ -184,7 +206,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 还原控件的逻辑
-        private void RestoreControl(ChildControlInfo info) {
+        private void RestoreControl(ChildControlInfo info)
+        {
             if (info == null) return;
 
             // 状态
@@ -203,34 +226,58 @@ namespace WindowsFormsApp1 {
         #endregion
 
         // 事件：toolblock 执行运行后
-        private async void OnCalibrateToolBlockRan(object sender, EventArgs e) {
-            if (MyToolBlock.Instance.CalibrateToolBlock.RunStatus.Result == CogToolResultConstants.Accept) {
+        private void OnCalibrateToolBlockRan(object sender, EventArgs e)
+        {
+            if (MyToolBlock.Instance.CalibrateToolBlock.RunStatus.Result == CogToolResultConstants.Accept)
+            {
                 UpdateRecordDisplay(myRecordDisplay1, MyToolBlock.Instance.CalibrateToolBlock);
-                try {
-                    await PlcControl.Instance.HandleOffset(1);
-                }
-                catch (Exception exception) {
-                    Logger.Instance.AddLog(exception.Message);
-                }
             }
-            else {
+            else
+            {
                 Logger.Instance.AddLog("标定ToolBlock运行失败");
             }
         }
 
-        private void OnIdentificationToolBlockRan(object sender, EventArgs e) {
-            if (MyToolBlock.Instance.IdentificationToolBlock.RunStatus.Result == CogToolResultConstants.Accept) {
+        private async void OnIdentificationToolBlockRan(object sender, EventArgs e)
+        {
+            if (MyToolBlock.Instance.IdentificationToolBlock.RunStatus.Result == CogToolResultConstants.Accept)
+            {
                 UpdateRecordDisplay(myRecordDisplay2, MyToolBlock.Instance.IdentificationToolBlock);
+
+                var keys = new List<string> { "Angle", "X", "Y" };
+
+                // 记录基准值
+                var (res, values) =
+                    MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.IdentificationToolBlock, keys);
+                if (res)
+                {
+                    IniControl.Instance.BaseX = Convert.ToSingle(values["X"]);
+                    IniControl.Instance.BaseY = Convert.ToSingle(values["Y"]);
+                    IniControl.Instance.BaseAngle = Convert.ToSingle(values["Angle"]);
+                }
+
+                try
+                {
+                    await PlcControl.Instance.HandleOffset();
+                }
+                catch (Exception exception)
+                {
+                    Logger.Instance.AddLog(exception.Message);
+                }
             }
-            else {
+            else
+            {
                 Logger.Instance.AddLog("识别ToolBlock运行失败");
             }
         }
 
         // 传图像给toolblock
-        private void ImageToToolBlock(CogToolBlock toolBlock, ICogImage image, Action callback = null) {
-            if (toolBlock != null) {
-                if (!toolBlock.Inputs.Contains("InputImage")) {
+        private void ImageToToolBlock(CogToolBlock toolBlock, ICogImage image, Action callback = null)
+        {
+            if (toolBlock != null)
+            {
+                if (!toolBlock.Inputs.Contains("InputImage"))
+                {
                     toolBlock.Inputs.Add(new CogToolBlockTerminal("InputImage", image));
                 }
 
@@ -238,14 +285,17 @@ namespace WindowsFormsApp1 {
                 // 传进图像后，执行toolblock
                 callback?.Invoke();
             }
-            else {
+            else
+            {
                 Logger.Instance.AddLog("ToolBlock vpp文件未加载，图像不会被处理");
             }
         }
 
         // 拍照完成事件
-        private void Complete(object sender, CogCompleteEventArgs e) {
-            try {
+        private void Complete(object sender, CogCompleteEventArgs e)
+        {
+            try
+            {
                 var image = CameraControl.Instance.GetGraphic();
                 RunOnUIThread(() => { myDisplay2.SetGraphic(image); });
 
@@ -262,14 +312,16 @@ namespace WindowsFormsApp1 {
                 RunOnUIThread(() => { takePho.Enabled = true; });
                 Logger.Instance.AddLog("拍照结束");
             }
-            catch (Exception exception) {
+            catch (Exception exception)
+            {
                 Logger.Instance.AddLog(exception.Message, LogLevel.Error);
             }
         }
 
 
         // 开启实时
-        private void startLive_Click(object sender, EventArgs e) {
+        private void startLive_Click(object sender, EventArgs e)
+        {
             myDisplay1.StartLive(CameraControl.Instance.Acq);
 
             Logger.Instance.AddLog("开启相机实时预览");
@@ -279,7 +331,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 关闭实时
-        private void stopLive_Click(object sender, EventArgs e) {
+        private void stopLive_Click(object sender, EventArgs e)
+        {
             myDisplay1.StopLive();
 
             Logger.Instance.AddLog("关闭相机实时预览");
@@ -289,7 +342,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 一次拍照
-        private void takePho_Click(object sender, EventArgs e) {
+        private void takePho_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("开始拍照...");
             takePho.Enabled = false;
 
@@ -298,14 +352,19 @@ namespace WindowsFormsApp1 {
         }
 
         // plc连接
-        private async void connect_plc_Click(object sender, EventArgs e) {
-            var message = await Task.Run(() => {
-                try {
+        private async void connect_plc_Click(object sender, EventArgs e)
+        {
+            var message = await Task.Run(() =>
+            {
+                try
+                {
                     Logger.Instance.AddLog("正在连接PLC...");
                     PlcControl.Instance.Connect();
 
-                    if (PlcControl.Instance.IsConnected) {
-                        RunOnUIThread(() => {
+                    if (PlcControl.Instance.IsConnected)
+                    {
+                        RunOnUIThread(() =>
+                        {
                             connectPlc.Enabled = false;
                             connectPlc_item.Enabled = false;
                             disconnectPlc_item.Enabled = true;
@@ -316,7 +375,8 @@ namespace WindowsFormsApp1 {
 
                     throw new Exception("PLC连接失败");
                 }
-                catch (Exception exception) {
+                catch (Exception exception)
+                {
                     return exception.Message;
                 }
             });
@@ -324,7 +384,8 @@ namespace WindowsFormsApp1 {
         }
 
         // plc断开
-        private void disconnect_plc_Click(object sender, EventArgs e) {
+        private void disconnect_plc_Click(object sender, EventArgs e)
+        {
             PlcControl.Instance.Disconnect();
 
             connectPlc.Enabled = true;
@@ -335,18 +396,22 @@ namespace WindowsFormsApp1 {
         }
 
         // 初始化相机事件
-        private void init_camera_btn_Click(object sender, EventArgs e) {
+        private void init_camera_btn_Click(object sender, EventArgs e)
+        {
             InitCamera();
         }
 
         // 右键控制listview放大缩小按钮
-        private void maxControl_Click(object sender, EventArgs e) {
+        private void maxControl_Click(object sender, EventArgs e)
+        {
             _controlInfos.TryGetValue(listView1, out var lv);
 
-            if (lv?.Status == ChildControlStatus.Maximized) {
+            if (lv?.Status == ChildControlStatus.Maximized)
+            {
                 maxControl.Text = @"放大";
             }
-            else if (lv?.Status == ChildControlStatus.Minimized) {
+            else if (lv?.Status == ChildControlStatus.Minimized)
+            {
                 maxControl.Text = @"缩小";
             }
 
@@ -354,35 +419,41 @@ namespace WindowsFormsApp1 {
         }
 
         // 导出日志CSV
-        private async void exportCsv_Click(object sender, EventArgs e) {
+        private async void exportCsv_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("正在导出日志...");
 
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = @"CSV文件 (*.csv)|*.csv";
             saveFileDialog.FileName = "Log.csv";
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK) {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
                 var message = await Logger.Instance.ExportToCsv(saveFileDialog.FileName);
                 Logger.Instance.AddLog(message);
             }
-            else {
+            else
+            {
                 Logger.Instance.AddLog("取消导出日志");
             }
         }
 
 
         // 初始化相机事件
-        private void initCamera_menuItem_Click(object sender, EventArgs e) {
+        private void initCamera_menuItem_Click(object sender, EventArgs e)
+        {
             InitCamera();
 
             initCameraMenu_item.Enabled = false;
         }
 
         // 断开相机
-        private void disconnectCamera_item_Click(object sender, EventArgs e) {
+        private void disconnectCamera_item_Click(object sender, EventArgs e)
+        {
             CameraControl.Instance.DisposeCamera();
 
-            if (myDisplay1.LiveDisplayStatus()) {
+            if (myDisplay1.LiveDisplayStatus())
+            {
                 myDisplay1.StopLive();
             }
 
@@ -397,14 +468,16 @@ namespace WindowsFormsApp1 {
         }
 
         // 开启标定作业窗口
-        private void calibrate_Click(object sender, EventArgs e) {
+        private void calibrate_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("打开标定作业Form...");
             var calibrateForm = new ToolBlock(MyToolBlock.Instance.CalibrateToolBlock, LoadToolBlock.Calibrate);
             calibrateForm.Show();
         }
 
         // 开启识别作业窗口
-        private void identificationWork_item_Click(object sender, EventArgs e) {
+        private void identificationWork_item_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("打开识别作业Form...");
             var identificationForm =
                 new ToolBlock(MyToolBlock.Instance.IdentificationToolBlock, LoadToolBlock.Identification);
@@ -412,9 +485,11 @@ namespace WindowsFormsApp1 {
         }
 
         // 关闭窗口
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
             // 关闭实时预览
-            if (myDisplay1.LiveDisplayStatus()) {
+            if (myDisplay1.LiveDisplayStatus())
+            {
                 myDisplay1.StopLive();
             }
 
@@ -425,7 +500,8 @@ namespace WindowsFormsApp1 {
 
             Logger.Instance.Logs.ListChanged -= LogListOnListChanged;
 
-            if (CameraControl.Instance.Acq != null) {
+            if (CameraControl.Instance.Acq != null)
+            {
                 CameraControl.Instance.Acq.Complete -= Complete;
             }
 
@@ -442,7 +518,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 加载标定作业tb vpp
-        private async void calibrate_item_Click(object sender, EventArgs e) {
+        private async void calibrate_item_Click(object sender, EventArgs e)
+        {
             await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
             MyToolBlock.Instance.CalibrateToolBlock.Ran -= OnCalibrateToolBlockRan;
             MyToolBlock.Instance.CalibrateToolBlock.Ran += OnCalibrateToolBlockRan;
@@ -450,7 +527,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 加载识别作业tb vpp
-        private async void identification_item_Click(object sender, EventArgs e) {
+        private async void identification_item_Click(object sender, EventArgs e)
+        {
             await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
             MyToolBlock.Instance.IdentificationToolBlock.Ran -= OnIdentificationToolBlockRan;
             MyToolBlock.Instance.IdentificationToolBlock.Ran += OnIdentificationToolBlockRan;
@@ -458,7 +536,8 @@ namespace WindowsFormsApp1 {
         }
 
         // 标定和识别作业同时加载
-        private async void tbBoth_item_Click(object sender, EventArgs e) {
+        private async void tbBoth_item_Click(object sender, EventArgs e)
+        {
             await LoadVpp(_calibrateVppPath, LoadToolBlock.Calibrate);
             await LoadVpp(_calibNPointToNPointVppPath, LoadToolBlock.Identification);
 
@@ -472,24 +551,58 @@ namespace WindowsFormsApp1 {
         }
 
         // 打开九点标定窗口
-        private void ninePointCali_item_Click(object sender, EventArgs e) {
+        private void ninePointCali_item_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("打开九点标定窗口");
             var ninePoint = new NPointCalibrate();
             ninePoint.Show();
         }
 
         // 配置
-        private void config_item_Click(object sender, EventArgs e) {
+        private void config_item_Click(object sender, EventArgs e)
+        {
             var config = new Config();
             config.Show();
         }
 
-        private void fittingRotation_item_Click(object sender, EventArgs e) {
+        private void fittingRotation_item_Click(object sender, EventArgs e)
+        {
             Logger.Instance.AddLog("打开拟合窗口");
             var centerCalibrate = new CenterCalibrate();
             centerCalibrate.Show();
         }
 
         #endregion
+
+        private void detectionListening_item_Click(object sender, EventArgs e)
+        {
+            PlcControl.Instance.StartListener(TimerInterval, DetectionListening);
+            Logger.Instance.AddLog($"=====开始检测运行：监听PLC服务启动，每{TimerInterval}毫秒读取一次PLC=====");
+        }
+
+        private async Task DetectionListening()
+        {
+            try
+            {
+                var measureNum = await PlcControl.Instance.Read<int>(PlcDataAddress.MeasureNum.GetAddress());
+                if (PlcControl.Instance.MeasureNum != measureNum && measureNum != 0)
+                {
+                    PlcControl.Instance.MeasureNum = measureNum;
+                    Logger.Instance.AddLog($"{measureNum}次拍照开始");
+                    CameraControl.Instance.TakePhotoGraph();
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Instance.AddLog(exception.Message);
+            }
+        }
+
+        private void clearDetectionListening_item_Click(object sender, EventArgs e)
+        {
+            PlcControl.Instance.StopListener();
+            PlcControl.Instance.MeasureNum = 0;
+            PlcControl.Instance.MeasureNumCheck = 0;
+        }
     }
 }

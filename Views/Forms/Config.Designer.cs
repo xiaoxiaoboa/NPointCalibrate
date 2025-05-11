@@ -27,7 +27,8 @@ namespace WindowsFormsApp1.Views.Forms {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.textBox2 = new System.Windows.Forms.TextBox();

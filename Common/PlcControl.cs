@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cognex.VisionPro;
 using S7.Net;
 using WindowsFormsApp1.Common.CogTools;
 using WindowsFormsApp1.Enum;
@@ -159,19 +160,24 @@ namespace WindowsFormsApp1.Common
 
         // 处理偏移
         /// <summary>
-        /// 处理偏移量计算并将结果写入PLC。
-        /// 该方法根据提供的测量编号获取工具块的输出结果，计算偏移量，并将偏移值写入PLC。
-        /// 如果测量编号无效或获取工具块输出失败，则不会执行任何操作。
+        /// 处理偏移计算并将结果写入PLC。
+        /// 该方法根据当前的测量编号（MeasureNum）和识别工具块的运行状态，计算角度、X轴和Y轴的偏移量。
+        /// 如果识别工具块运行失败或结果不符合预期，则抛出异常。
+        /// 计算完成后，将偏移值写入PLC，并更新确认编号。
         /// </summary>
-        /// <param name="measureNum">测量编号，用于标识当前的测量类型。仅支持值为1或2。</param>
-        /// <return>无返回值。如果发生异常，会抛出异常信息。</return>
-        public async Task HandleOffset(int measureNum)
+        /// <returns>无返回值。</returns>
+        /// <exception cref="Exception">当识别工具块运行失败或偏移计算过程中发生错误时抛出。</exception>
+        public async Task HandleOffset()
         {
-            if (measureNum != 1 && measureNum != 2) return;
+
+            if (MyToolBlock.Instance.IdentificationToolBlock.RunStatus.Result != CogToolResultConstants.Accept)
+            {
+                throw new Exception($"偏移计算失败：由于识别ToolBlock运行失败");
+            }
 
             var keys = new List<string> { "Angle", "X", "Y" };
             var (res, values) =
-                MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.CalibrateToolBlock, keys);
+                MyToolBlock.Instance.GetToolBlockOutputsResults(MyToolBlock.Instance.IdentificationToolBlock, keys);
             if (!res) return;
 
             var r = Convert.ToSingle(values["Angle"]) * (180 / Math.PI);
@@ -195,7 +201,7 @@ namespace WindowsFormsApp1.Common
 
                 // 写入确认编号
                 await Instance.Write(PlcDataAddress.MeasureNumCheck.GetAddress(),
-                    measureNum);
+                    MeasureNum);
             }
             catch (Exception exception)
             {

@@ -14,7 +14,6 @@ namespace WindowsFormsApp1.Views.Forms {
         }
 
         public void StartLive(object acqFifo, [Optional] bool own) {
-            cogDisplay1.AutoFit = true;
             cogDisplay1.StartLiveDisplay(acqFifo);
         }
 
@@ -25,7 +24,6 @@ namespace WindowsFormsApp1.Views.Forms {
         }
 
         public void SetGraphic(ICogImage image) {
-            cogDisplay1.AutoFit = true;
             cogDisplay1.Image = image;
         }
 

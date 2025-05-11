@@ -58,7 +58,7 @@ namespace WindowsFormsApp1.Views.Forms
 
             RunOnUIThread(() =>
                 cogRecordDisplay1.Record =
-                    MyToolBlock.Instance.GetRecord(MyToolBlock.Instance.IdentificationToolBlock, "CogFixtureTool1")
+                    MyToolBlock.Instance.GetRecord(MyToolBlock.Instance.IdentificationToolBlock, "CogCalibNPointTool1.OutputImage")
             );
 
 
@@ -91,12 +91,15 @@ namespace WindowsFormsApp1.Views.Forms
             try
             {
                 Logger.Instance.AddLog("正在计算...");
-                var point = CalculateCircleCenter(_calibrationPoints[0], _calibrationPoints[1],
-                    _calibrationPoints[2]);
+                var point = CalculateCircleCenter(_calibrationPoints[1], _calibrationPoints[2],
+                    _calibrationPoints[3]);
                 // 存圆心坐标
                 IniControl.Instance.RotateCenterX = point.X;
                 IniControl.Instance.RotateCenterY = point.Y;
+                // 添加圆心坐标用于结果展示
+                _calibrationPoints.Add(4, point);
                 IniControl.Instance.SaveFile();
+                
                 Logger.Instance.AddLog($"圆心计算完成，x：{point.X}，y：{point.Y}");
 
                 RunOnUIThread(() =>
@@ -185,6 +188,7 @@ namespace WindowsFormsApp1.Views.Forms
 
         private void CenterCalibrate_FormClosing(object sender, FormClosingEventArgs e)
         {
+            MyToolBlock.Instance.IdentificationToolBlock.Ran -= IdentificationToolBlockOnRan;
             PlcControl.Instance.CenterCaliNum = 0;
             PlcControl.Instance.CenterCaliNumCheck = 0;
             PlcControl.Instance.StopListener();

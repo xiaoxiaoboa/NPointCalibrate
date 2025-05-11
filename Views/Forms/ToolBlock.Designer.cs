@@ -25,7 +25,8 @@ namespace WindowsFormsApp1.Views.Forms {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.cogToolBlockEditV21 = new Cognex.VisionPro.ToolBlock.CogToolBlockEditV2();
@@ -109,7 +110,7 @@ namespace WindowsFormsApp1.Views.Forms {
             this.PMA_item.Size = new System.Drawing.Size(173, 24);
             this.PMA_item.Text = "查看PMA结果";
             // 
-            // Form2
+            // ToolBlock
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

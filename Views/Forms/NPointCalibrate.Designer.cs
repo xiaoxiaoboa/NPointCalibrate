@@ -27,7 +27,8 @@ namespace WindowsFormsApp1.Views.Forms {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NPointCalibrate));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();

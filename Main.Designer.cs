@@ -26,7 +26,8 @@ namespace WindowsFormsApp1 {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -85,6 +86,9 @@ namespace WindowsFormsApp1 {
             this.operation = new System.Windows.Forms.ToolStripMenuItem();
             this.fittingRotation_item = new System.Windows.Forms.ToolStripMenuItem();
             this.ninePointCali_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.detection_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.detectionListening_item = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearDetectionListening_item = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -643,7 +647,7 @@ namespace WindowsFormsApp1 {
             // 
             // operation
             // 
-            this.operation.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fittingRotation_item, this.ninePointCali_item });
+            this.operation.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fittingRotation_item, this.ninePointCali_item, this.detection_item });
             this.operation.Name = "operation";
             this.operation.Size = new System.Drawing.Size(51, 25);
             this.operation.Text = "操作";
@@ -652,7 +656,7 @@ namespace WindowsFormsApp1 {
             // 
             this.fittingRotation_item.Enabled = false;
             this.fittingRotation_item.Name = "fittingRotation_item";
-            this.fittingRotation_item.Size = new System.Drawing.Size(152, 24);
+            this.fittingRotation_item.Size = new System.Drawing.Size(138, 24);
             this.fittingRotation_item.Text = "拟合旋转";
             this.fittingRotation_item.ToolTipText = "加载识别ToolBlock后可选择";
             this.fittingRotation_item.Click += new System.EventHandler(this.fittingRotation_item_Click);
@@ -661,10 +665,31 @@ namespace WindowsFormsApp1 {
             // 
             this.ninePointCali_item.Enabled = false;
             this.ninePointCali_item.Name = "ninePointCali_item";
-            this.ninePointCali_item.Size = new System.Drawing.Size(152, 24);
+            this.ninePointCali_item.Size = new System.Drawing.Size(138, 24);
             this.ninePointCali_item.Text = "九点标定";
             this.ninePointCali_item.ToolTipText = "加载标定ToolBlock后可选择";
             this.ninePointCali_item.Click += new System.EventHandler(this.ninePointCali_item_Click);
+            // 
+            // detection_item
+            // 
+            this.detection_item.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.detectionListening_item, this.clearDetectionListening_item });
+            this.detection_item.Name = "detection_item";
+            this.detection_item.Size = new System.Drawing.Size(138, 24);
+            this.detection_item.Text = "检测";
+            // 
+            // detectionListening_item
+            // 
+            this.detectionListening_item.Name = "detectionListening_item";
+            this.detectionListening_item.Size = new System.Drawing.Size(138, 24);
+            this.detectionListening_item.Text = "监听";
+            this.detectionListening_item.Click += new System.EventHandler(this.detectionListening_item_Click);
+            // 
+            // clearDetectionListening_item
+            // 
+            this.clearDetectionListening_item.Name = "clearDetectionListening_item";
+            this.clearDetectionListening_item.Size = new System.Drawing.Size(138, 24);
+            this.clearDetectionListening_item.Text = "清除监听";
+            this.clearDetectionListening_item.Click += new System.EventHandler(this.clearDetectionListening_item_Click);
             // 
             // Main
             // 
@@ -701,6 +726,11 @@ namespace WindowsFormsApp1 {
             this.miniToolStrip.PerformLayout();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.ToolStripMenuItem detectionListening_item;
+        private System.Windows.Forms.ToolStripMenuItem clearDetectionListening_item;
+
+        private System.Windows.Forms.ToolStripMenuItem detection_item;
 
         private System.Windows.Forms.ToolStripMenuItem system;
         private System.Windows.Forms.ToolStripMenuItem config_item;
@@ -766,7 +796,7 @@ namespace WindowsFormsApp1 {
 
         private System.Windows.Forms.ListView listView1;
 
-        private MyDisplay myDisplay1;
+        private WindowsFormsApp1.Views.Forms.MyDisplay myDisplay1;
         private MyDisplay myDisplay2;
 
         private System.Windows.Forms.Panel panel11;
